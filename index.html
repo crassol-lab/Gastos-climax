@@ -106,14 +106,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     <span class="tl">TOTAL GASTOS</span>
     <span class="tn" id="tn">$0</span>
   </div>
-  <div class="card">
-    <div class="ct"><span class="num">6</span> 💳 Pago de gastos con</div>
-    <div class="sw"><select id="medio"><option value="">Seleccionar medio de pago</option><option>Mercado Pago</option><option>Transferencia</option><option>Efectivo</option></select></div>
-    <div class="mw-full"><input type="number" id="pagaMonto" placeholder="Monto pagado"></div>
-    <textarea id="pagoDesc" placeholder="Detalle del pago (opcional)..." rows="2"></textarea>
-  </div>
   <div class="card-cobro">
-    <div class="ct-green"><span class="num-green">7</span> 💰 ¿El cliente te pagó?</div>
+    <div class="ct-green"><span class="num-green">6</span> 💰 ¿El cliente te pagó?</div>
     <div class="ct-sub">Solo completá esto si cobraste plata del cliente en este service</div>
     <input id="cobroCliente" class="cobro-input" placeholder="Nombre del cliente" autocomplete="off">
     <div class="mw-full"><input type="number" id="cobroMonto" class="cobro-input" placeholder="Monto cobrado al cliente" oninput="calcular()"></div>
@@ -205,9 +199,6 @@ function getDatos() {
   var emp = document.getElementById("empleado").value;
   var trab = document.getElementById("trabajo").value.trim();
   var od = document.getElementById("otrosDesc").value.trim();
-  var mp = document.getElementById("medio").value;
-  var pm = gv("pagaMonto");
-  var pd = document.getElementById("pagoDesc").value.trim();
   var mats = getMats();
   var uber = gv("uber"), co = gv("comb"), es = gv("estac"), pu = gv("pub");
   var transp = uber + co + es + pu;
@@ -219,7 +210,7 @@ function getDatos() {
   var cobroCliente = document.getElementById("cobroCliente").value.trim();
   var cobroMonto = gv("cobroMonto");
   var cobroMedio = document.getElementById("cobroMedio").value;
-  return { emp:emp, trab:trab, od:od, mp:mp, pm:pm, pd:pd, mats:mats,
+  return { emp:emp, trab:trab, od:od, mats:mats,
            uber:uber, co:co, es:es, pu:pu, transp:transp, comida:comida,
            mt:mt, otros:otros, total:total,
            cobroCliente:cobroCliente, cobroMonto:cobroMonto, cobroMedio:cobroMedio };
@@ -254,11 +245,6 @@ function enviarWsp() {
     if (o.od) m += "   " + o.od + "\n";
   }
   m += "\n\n💰 *TOTAL GASTOS: " + fmt(o.total) + "*";
-  if (o.mp || o.pm) {
-    m += "\n\n💳 *Pago de gastos con:* " + (o.mp || "-");
-    if (o.pm) m += " - " + fmt(o.pm);
-    if (o.pd) m += "\n   " + o.pd;
-  }
   if (o.cobroMonto > 0) {
     m += "\n\n✅ *COBRO AL CLIENTE:* " + fmt(o.cobroMonto);
     if (o.cobroCliente) m += "\n   Cliente: " + o.cobroCliente;
@@ -279,8 +265,7 @@ function enviarWsp() {
     o.pu > 0 ? o.pu : '',
     o.mt > 0 ? o.mt : '',
     o.otros > 0 ? o.otros : '',
-    o.od, o.total,
-    o.mp + (o.pm ? ': ' + o.pm : '')
+    o.od, o.total, ''
   ];
   fetch(SCRIPT_URL, {
     method: 'POST', mode: 'no-cors',
@@ -307,11 +292,10 @@ function enviarWsp() {
 
 function reset() {
   document.getElementById("empleado").value = "";
-  var ids = ["trabajo","otrosDesc","pagoDesc","cobroCliente"];
+  var ids = ["trabajo","otrosDesc","cobroCliente"];
   for (var i = 0; i < ids.length; i++) document.getElementById(ids[i]).value = "";
-  var ns = ["uber","comb","estac","pub","comida","otros","pagaMonto","cobroMonto"];
+  var ns = ["uber","comb","estac","pub","comida","otros","cobroMonto"];
   for (var i = 0; i < ns.length; i++) document.getElementById(ns[i]).value = "";
-  document.getElementById("medio").value = "";
   document.getElementById("cobroMedio").value = "";
   document.getElementById("matList").innerHTML = "";
   mc = 0;
