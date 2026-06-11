@@ -6,7 +6,7 @@
 <title>Gastos - Climax Service</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-:root{--blue:#003b8e;--accent:#0057d9;--gray:#f0f2f7;--white:#fff;--text:#1a1a2e;--muted:#6b7280;--border:#dde2ec;}
+:root{--blue:#003b8e;--accent:#0057d9;--gray:#f0f2f7;--white:#fff;--text:#1a1a2e;--muted:#6b7280;--border:#dde2ec;--green:#16a34a;--green-light:#f0fdf4;--green-border:#bbf7d0;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:"DM Sans",sans-serif;background:var(--gray);color:var(--text);padding-bottom:40px;}
 header{background:var(--blue);color:white;padding:20px;text-align:center;position:sticky;top:0;z-index:10;box-shadow:0 2px 12px rgba(0,59,142,.25);}
@@ -14,8 +14,12 @@ header h1{font-size:20px;font-weight:700;}
 .fh{font-family:"DM Mono",monospace;font-size:12px;opacity:.75;margin-top:4px;}
 .container{max-width:500px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:14px;}
 .card{background:var(--white);border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,59,142,.10);border:1px solid var(--border);}
+.card-cobro{background:var(--green-light);border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(22,163,74,.10);border:2px solid var(--green-border);}
 .ct{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--blue);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.ct-green{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--green);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.ct-sub{font-size:12px;color:var(--green);opacity:.8;margin-bottom:14px;padding-left:30px;}
 .num{background:var(--blue);color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+.num-green{background:var(--green);color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
 input,textarea,select{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-family:"DM Sans",sans-serif;color:var(--text);background:#fafbff;margin-bottom:10px;appearance:none;-webkit-appearance:none;}
 input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);background:#fff;}
 input[type=number]{-moz-appearance:textfield;}
@@ -49,6 +53,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .footer{text-align:center;font-size:12px;color:var(--muted);margin-top:6px;}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a2e;color:white;padding:12px 22px;border-radius:30px;font-size:14px;font-weight:500;z-index:200;transition:transform .3s;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);}
+.cobro-input{background:white;border:1.5px solid var(--green-border) !important;}
+.cobro-input:focus{border-color:var(--green) !important;}
 </style>
 </head>
 <body>
@@ -60,7 +66,16 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 <div class="container">
   <div class="card">
     <div class="ct"><span class="num">1</span> Datos</div>
-    <input id="empleado" placeholder="Nombre del empleado" autocomplete="off">
+    <div class="sw">
+      <select id="empleado">
+        <option value="">Seleccionar empleado</option>
+        <option>Brian</option>
+        <option>Leonel</option>
+        <option>Antonella</option>
+        <option>Lionel</option>
+        <option>Hector</option>
+      </select>
+    </div>
     <div class="two-col">
       <div><label>Fecha</label><input type="date" id="fecha"></div>
       <div><label>Trabajo / Cliente</label><input id="trabajo" placeholder="Ej: Carla Rassol" autocomplete="off"></div>
@@ -92,10 +107,17 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     <span class="tn" id="tn">$0</span>
   </div>
   <div class="card">
-    <div class="ct"><span class="num">6</span> 💳 Pago con</div>
+    <div class="ct"><span class="num">6</span> 💳 Pago de gastos con</div>
     <div class="sw"><select id="medio"><option value="">Seleccionar medio de pago</option><option>Mercado Pago</option><option>Transferencia</option><option>Efectivo</option></select></div>
     <div class="mw-full"><input type="number" id="pagaMonto" placeholder="Monto pagado"></div>
     <textarea id="pagoDesc" placeholder="Detalle del pago (opcional)..." rows="2"></textarea>
+  </div>
+  <div class="card-cobro">
+    <div class="ct-green"><span class="num-green">7</span> 💰 ¿El cliente te pagó?</div>
+    <div class="ct-sub">Solo completá esto si cobraste plata del cliente en este service</div>
+    <input id="cobroCliente" class="cobro-input" placeholder="Nombre del cliente" autocomplete="off">
+    <div class="mw-full"><input type="number" id="cobroMonto" class="cobro-input" placeholder="Monto cobrado al cliente" oninput="calcular()"></div>
+    <div class="sw"><select id="cobroMedio" class="cobro-input"><option value="">Medio de pago del cliente</option><option>Mercado Pago</option><option>Transferencia</option><option>Efectivo</option></select></div>
   </div>
   <div class="card" style="padding:16px">
     <div class="btns">
@@ -180,7 +202,7 @@ function getMats() {
 }
 
 function getDatos() {
-  var emp = document.getElementById("empleado").value.trim();
+  var emp = document.getElementById("empleado").value;
   var trab = document.getElementById("trabajo").value.trim();
   var od = document.getElementById("otrosDesc").value.trim();
   var mp = document.getElementById("medio").value;
@@ -194,12 +216,18 @@ function getDatos() {
   for (var i = 0; i < mats.length; i++) mt += mats[i].m;
   var otros = gv("otros");
   var total = transp + comida + mt + otros;
-  return { emp:emp, trab:trab, od:od, mp:mp, pm:pm, pd:pd, mats:mats, uber:uber, co:co, es:es, pu:pu, transp:transp, comida:comida, mt:mt, otros:otros, total:total };
+  var cobroCliente = document.getElementById("cobroCliente").value.trim();
+  var cobroMonto = gv("cobroMonto");
+  var cobroMedio = document.getElementById("cobroMedio").value;
+  return { emp:emp, trab:trab, od:od, mp:mp, pm:pm, pd:pd, mats:mats,
+           uber:uber, co:co, es:es, pu:pu, transp:transp, comida:comida,
+           mt:mt, otros:otros, total:total,
+           cobroCliente:cobroCliente, cobroMonto:cobroMonto, cobroMedio:cobroMedio };
 }
 
 function enviarWsp() {
-  var emp = document.getElementById("empleado").value.trim();
-  if (!emp) { toast("Ingresa el nombre del empleado"); return; }
+  var emp = document.getElementById("empleado").value;
+  if (!emp) { toast("Seleccioná un empleado"); return; }
   if (yaEnviado) { toast("Ya fue enviado. Tocá Nuevo registro para cargar otro."); return; }
 
   var o = getDatos();
@@ -227,14 +255,22 @@ function enviarWsp() {
   }
   m += "\n\n💰 *TOTAL GASTOS: " + fmt(o.total) + "*";
   if (o.mp || o.pm) {
-    m += "\n\n💳 *Pago con:* " + (o.mp || "-");
+    m += "\n\n💳 *Pago de gastos con:* " + (o.mp || "-");
     if (o.pm) m += " - " + fmt(o.pm);
     if (o.pd) m += "\n   " + o.pd;
+  }
+  if (o.cobroMonto > 0) {
+    m += "\n\n✅ *COBRO AL CLIENTE:* " + fmt(o.cobroMonto);
+    if (o.cobroCliente) m += "\n   Cliente: " + o.cobroCliente;
+    if (o.cobroMedio) m += "\n   Medio: " + o.cobroMedio;
   }
 
   window.open("https://wa.me/?text=" + encodeURIComponent(m), "_blank");
 
   yaEnviado = true;
+
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyIF1-gdPJU41pJLZaAG1IhgYTlEvrUltcu2OqBappTz4Hni9GBMPg2ODHfQu23SikF/exec';
+
   var filaG = [
     gf(), o.emp,
     o.uber > 0 ? o.uber : '',
@@ -246,21 +282,37 @@ function enviarWsp() {
     o.od, o.total,
     o.mp + (o.pm ? ': ' + o.pm : '')
   ];
-  fetch('https://script.google.com/macros/s/AKfycbyIF1-gdPJU41pJLZaAG1IhgYTlEvrUltcu2OqBappTz4Hni9GBMPg2ODHfQu23SikF/exec', {
-    method: 'POST',
-    mode: 'no-cors',
+  fetch(SCRIPT_URL, {
+    method: 'POST', mode: 'no-cors',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ hoja: 'gastos', fila: filaG })
   }).catch(function() {});
+
+  if (o.cobroMonto > 0) {
+    var filaC = [
+      gf(), o.emp,
+      o.cobroCliente || o.trab,
+      o.cobroMonto,
+      o.cobroMedio
+    ];
+    fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ hoja: 'cobros', fila: filaC })
+    }).catch(function() {});
+  }
+
   toast("✅ Enviado correctamente");
 }
 
 function reset() {
-  var ids = ["empleado","trabajo","otrosDesc","pagoDesc"];
+  document.getElementById("empleado").value = "";
+  var ids = ["trabajo","otrosDesc","pagoDesc","cobroCliente"];
   for (var i = 0; i < ids.length; i++) document.getElementById(ids[i]).value = "";
-  var ns = ["uber","comb","estac","pub","comida","otros","pagaMonto"];
+  var ns = ["uber","comb","estac","pub","comida","otros","pagaMonto","cobroMonto"];
   for (var i = 0; i < ns.length; i++) document.getElementById(ns[i]).value = "";
   document.getElementById("medio").value = "";
+  document.getElementById("cobroMedio").value = "";
   document.getElementById("matList").innerHTML = "";
   mc = 0;
   yaEnviado = false;
