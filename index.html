@@ -74,6 +74,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         <option>Antonella</option>
         <option>Lionel</option>
         <option>Hector</option>
+        <option>Oficina</option>
       </select>
     </div>
     <div class="two-col">
@@ -98,9 +99,19 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     <button class="add-btn" onclick="addMat()">+ Agregar material</button>
   </div>
   <div class="card">
-    <div class="ct"><span class="num">5</span> 📋 Otros gastos</div>
-    <div class="row"><label>📝 Otros</label><div class="mw"><input type="number" id="otros" placeholder="0" oninput="calcular()"></div></div>
-    <textarea id="otrosDesc" placeholder="Detalle (opcional)..." rows="2" style="margin-top:4px"></textarea>
+    <div class="ct"><span class="num">5</span> 🔁 Traspaso de dinero a empleado</div>
+    <div class="mw-full"><input type="number" id="traspasoMonto" placeholder="Monto" oninput="calcular()"></div>
+    <div class="sw">
+      <select id="traspasoDetalle">
+        <option value="">Seleccionar empleado</option>
+        <option>Brian</option>
+        <option>Leonel</option>
+        <option>Antonella</option>
+        <option>Lionel</option>
+        <option>Hector</option>
+        <option>Oficina</option>
+      </select>
+    </div>
   </div>
   <div class="total-box">
     <span class="tl">TOTAL GASTOS</span>
@@ -148,7 +159,7 @@ function gv(id) { return parseFloat(document.getElementById(id).value) || 0; }
 function fmt(n) { return "$" + Math.round(n).toLocaleString("es-AR"); }
 
 function calcular() {
-  var t = gv("uber") + gv("comb") + gv("estac") + gv("pub") + gv("comida") + gv("otros");
+  var t = gv("uber") + gv("comb") + gv("estac") + gv("pub") + gv("comida");
   var ms = document.querySelectorAll(".mm");
   for (var i = 0; i < ms.length; i++) t += parseFloat(ms[i].value) || 0;
   document.getElementById("tn").textContent = fmt(t);
@@ -198,21 +209,22 @@ function getMats() {
 function getDatos() {
   var emp = document.getElementById("empleado").value;
   var trab = document.getElementById("trabajo").value.trim();
-  var od = document.getElementById("otrosDesc").value.trim();
   var mats = getMats();
   var uber = gv("uber"), co = gv("comb"), es = gv("estac"), pu = gv("pub");
   var transp = uber + co + es + pu;
   var comida = gv("comida");
   var mt = 0;
   for (var i = 0; i < mats.length; i++) mt += mats[i].m;
-  var otros = gv("otros");
-  var total = transp + comida + mt + otros;
+  var total = transp + comida + mt;
+  var traspasoMonto = gv("traspasoMonto");
+  var traspasoDetalle = document.getElementById("traspasoDetalle").value;
   var cobroCliente = document.getElementById("cobroCliente").value.trim();
   var cobroMonto = gv("cobroMonto");
   var cobroMedio = document.getElementById("cobroMedio").value;
-  return { emp:emp, trab:trab, od:od, mats:mats,
+  return { emp:emp, trab:trab, mats:mats,
            uber:uber, co:co, es:es, pu:pu, transp:transp, comida:comida,
-           mt:mt, otros:otros, total:total,
+           mt:mt, total:total,
+           traspasoMonto:traspasoMonto, traspasoDetalle:traspasoDetalle,
            cobroCliente:cobroCliente, cobroMonto:cobroMonto, cobroMedio:cobroMedio };
 }
 
@@ -240,11 +252,11 @@ function enviarWsp() {
     for (var i = 0; i < o.mats.length; i++) m += "   " + o.mats[i].d + ": " + fmt(o.mats[i].m) + "\n";
     m += "   *Subtotal: " + fmt(o.mt) + "*\n";
   }
-  if (o.otros > 0) {
-    m += "\n📋 *Otros:* " + fmt(o.otros) + "\n";
-    if (o.od) m += "   " + o.od + "\n";
-  }
   m += "\n\n💰 *TOTAL GASTOS: " + fmt(o.total) + "*";
+  if (o.traspasoMonto > 0) {
+    m += "\n\n🔁 *TRASPASO DE DINERO:* " + fmt(o.traspasoMonto);
+    if (o.traspasoDetalle) m += "\n   A: " + o.traspasoDetalle;
+  }
   if (o.cobroMonto > 0) {
     m += "\n\n✅ *COBRO AL CLIENTE:* " + fmt(o.cobroMonto);
     if (o.cobroCliente) m += "\n   Cliente: " + o.cobroCliente;
@@ -264,8 +276,8 @@ function enviarWsp() {
     o.es > 0 ? o.es : '',
     o.pu > 0 ? o.pu : '',
     o.mt > 0 ? o.mt : '',
-    o.otros > 0 ? o.otros : '',
-    o.od, o.total, ''
+    o.traspasoMonto > 0 ? o.traspasoMonto : '',
+    o.traspasoDetalle, o.total, ''
   ];
   fetch(SCRIPT_URL, {
     method: 'POST', mode: 'no-cors',
@@ -292,10 +304,11 @@ function enviarWsp() {
 
 function reset() {
   document.getElementById("empleado").value = "";
-  var ids = ["trabajo","otrosDesc","cobroCliente"];
+  var ids = ["trabajo","cobroCliente"];
   for (var i = 0; i < ids.length; i++) document.getElementById(ids[i]).value = "";
-  var ns = ["uber","comb","estac","pub","comida","otros","cobroMonto"];
+  var ns = ["uber","comb","estac","pub","comida","traspasoMonto","cobroMonto"];
   for (var i = 0; i < ns.length; i++) document.getElementById(ns[i]).value = "";
+  document.getElementById("traspasoDetalle").value = "";
   document.getElementById("cobroMedio").value = "";
   document.getElementById("matList").innerHTML = "";
   mc = 0;
