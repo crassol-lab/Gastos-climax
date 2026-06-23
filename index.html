@@ -293,11 +293,13 @@ function enviarWsp() {
       o.cobroMonto,
       o.cobroMedio
     ];
-    fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ hoja: 'cobros', fila: filaC })
-    }).catch(function() {});
+    if (o.total > 0) {
+  fetch(SCRIPT_URL, {
+    method: 'POST', mode: 'no-cors',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ hoja: 'gastos', fila: filaG })
+  }).catch(function() {});
+}
   }
 
   toast("✅ Enviado correctamente");
