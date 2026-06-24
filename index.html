@@ -329,7 +329,7 @@ function enviarWsp() {
 
   var otDesc = o.otros.map(function(x){ return x.d; }).join(' / ');
   var filaG = [
-    gf(), o.emp,
+    gf(), '', o.emp,
     o.uber > 0 ? o.uber : '',
     o.co > 0 ? o.co : '',
     o.es > 0 ? o.es : '',
