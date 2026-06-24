@@ -281,10 +281,12 @@ function getDatos() {
 
 function enviarWsp() {
   var emp = document.getElementById("empleado").value;
-  if (!emp) { toast("Seleccioná un empleado"); return; }
+  if (!emp) { toast("⚠️ Seleccioná un empleado"); return; }
   if (yaEnviado) { toast("Ya fue enviado. Tocá Nuevo registro para cargar otro."); return; }
 
   var o = getDatos();
+  if (o.total === 0 && o.cobroMonto === 0) { toast("⚠️ Ingresá al menos un monto"); return; }
+
   var m = "*📱 REGISTRO DE GASTOS - CLIMAX*\n";
   m += "📅 Fecha: " + gf() + "\n";
   m += "\n👤 Empleado: *" + o.emp + "*\n";
