@@ -148,8 +148,10 @@ function ini() {
   var d = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
   var mo = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
   document.getElementById("fh").textContent = d[a.getDay()] + " " + a.getDate() + " de " + mo[a.getMonth()] + " " + a.getFullYear();
-  var h = new Date();
-  document.getElementById("fecha").value = h.getFullYear() + "-" + pad(h.getMonth()+1) + "-" + pad(h.getDate());
+  if (!document.getElementById("fecha").value) {
+    var h = new Date();
+    document.getElementById("fecha").value = h.getFullYear() + "-" + pad(h.getMonth()+1) + "-" + pad(h.getDate());
+  }
 }
 function pad(n) { return String(n).padStart(2,"0"); }
 ini();
@@ -380,6 +382,7 @@ function reset() {
   mc = 0;
   oc = 0;
   yaEnviado = false;
+  document.getElementById("fecha").value = "";
   ini();
   calcular();
   toast("Formulario reiniciado");
