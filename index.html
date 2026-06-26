@@ -329,7 +329,9 @@ function enviarWsp() {
 
   var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyuuXR1faJI9lWinkVn9COnntzkuIrbHFam8T2EUqmM70xyqUNMHm-2__0-ea-r4b28/exec';
 
-  var otDesc = o.otros.map(function(x){ return x.d; }).join(' / ');
+  var matDesc = o.mats.map(function(x){ return x.d; }).join(' / ');
+  var otDesc = [matDesc, o.otros.map(function(x){ return x.d; }).join(' / ')].filter(Boolean).join(' | ');
+
   var filaG = [
     gf(), '', o.emp,
     o.uber > 0 ? o.uber : '',
