@@ -104,8 +104,14 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     <button class="add-btn" onclick="addOtro()">+ Agregar otro gasto</button>
   </div>
   <div class="card">
-    <div class="ct"><span class="num">6</span> 🔁 Traspaso de dinero a empleado</div>
-    <div class="mw-full"><input type="number" id="traspasoMonto" placeholder="Monto" oninput="calcular()"></div>
+    <div class="ct"><span class="num">6</span> 🔁 Traspaso de dinero</div>
+    <div class="sw">
+      <select id="traspasoTipo">
+        <option value="">Tipo de movimiento</option>
+        <option>Sueldo</option>
+        <option>Traspaso entre empleados</option>
+      </select>
+    </div>
     <div class="sw">
       <select id="traspasoDetalle">
         <option value="">Seleccionar empleado</option>
@@ -117,6 +123,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         <option>Oficina</option>
       </select>
     </div>
+    <div class="mw-full"><input type="number" id="traspasoMonto" placeholder="Monto" oninput="calcular()"></div>
   </div>
   <div class="total-box">
     <span class="tl">TOTAL GASTOS</span>
@@ -270,6 +277,7 @@ function getDatos() {
   for (var i = 0; i < otros.length; i++) ot += otros[i].m;
   var total = transp + comida + mt + ot;
   var traspasoMonto = gv("traspasoMonto");
+  var traspasoTipo = document.getElementById("traspasoTipo").value;
   var traspasoDetalle = document.getElementById("traspasoDetalle").value;
   var cobroCliente = document.getElementById("cobroCliente").value.trim();
   var cobroMonto = gv("cobroMonto");
@@ -277,48 +285,49 @@ function getDatos() {
   return { emp:emp, trab:trab, mats:mats, otros:otros,
            uber:uber, co:co, es:es, pu:pu, transp:transp, comida:comida,
            mt:mt, ot:ot, total:total,
-           traspasoMonto:traspasoMonto, traspasoDetalle:traspasoDetalle,
+           traspasoMonto:traspasoMonto, traspasoTipo:traspasoTipo, traspasoDetalle:traspasoDetalle,
            cobroCliente:cobroCliente, cobroMonto:cobroMonto, cobroMedio:cobroMedio };
 }
 
 function enviarWsp() {
   var emp = document.getElementById("empleado").value;
-  if (!emp) { toast("⚠️ Seleccioná un empleado"); return; }
-  if (yaEnviado) { toast("Ya fue enviado. Tocá Nuevo registro para cargar otro."); return; }
+  if (!emp) { toast("Selecciona un empleado"); return; }
+  if (yaEnviado) { toast("Ya fue enviado. Toca Nuevo registro para cargar otro."); return; }
 
   var o = getDatos();
-  if (o.total === 0 && o.cobroMonto === 0) { toast("⚠️ Ingresá al menos un monto"); return; }
+  if (o.total === 0 && o.cobroMonto === 0 && o.traspasoMonto === 0) { toast("Ingresa al menos un monto"); return; }
 
-  var m = "*📱 REGISTRO DE GASTOS - CLIMAX*\n";
-  m += "📅 Fecha: " + gf() + "\n";
-  m += "\n👤 Empleado: *" + o.emp + "*\n";
-  if (o.trab) m += "🏷 Trabajo/Cliente: " + o.trab + "\n";
+  var m = "*REGISTRO DE GASTOS - CLIMAX*\n";
+  m += "Fecha: " + gf() + "\n";
+  m += "\nEmpleado: *" + o.emp + "*\n";
+  if (o.trab) m += "Trabajo/Cliente: " + o.trab + "\n";
   if (o.transp > 0) {
-    m += "\n🚗 *Transporte:*\n";
-    if (o.uber) m += "   🚕 Uber/Taxi: " + fmt(o.uber) + "\n";
-    if (o.co) m += "   ⛽ Combustible: " + fmt(o.co) + "\n";
-    if (o.es) m += "   🅿️ Estacionamiento: " + fmt(o.es) + "\n";
-    if (o.pu) m += "   🚌 Transp. publico: " + fmt(o.pu) + "\n";
+    m += "\n*Transporte:*\n";
+    if (o.uber) m += "   Uber/Taxi: " + fmt(o.uber) + "\n";
+    if (o.co) m += "   Combustible: " + fmt(o.co) + "\n";
+    if (o.es) m += "   Estacionamiento: " + fmt(o.es) + "\n";
+    if (o.pu) m += "   Transp. publico: " + fmt(o.pu) + "\n";
     m += "   *Subtotal: " + fmt(o.transp) + "*\n";
   }
-  if (o.comida > 0) m += "\n🍔 *Comida:* " + fmt(o.comida) + "\n";
+  if (o.comida > 0) m += "\n*Comida:* " + fmt(o.comida) + "\n";
   if (o.mats.length > 0) {
-    m += "\n🔩 *Materiales:*\n";
+    m += "\n*Materiales:*\n";
     for (var i = 0; i < o.mats.length; i++) m += "   " + o.mats[i].d + ": " + fmt(o.mats[i].m) + "\n";
     m += "   *Subtotal: " + fmt(o.mt) + "*\n";
   }
   if (o.otros.length > 0) {
-    m += "\n📦 *Otros:*\n";
+    m += "\n*Otros:*\n";
     for (var i = 0; i < o.otros.length; i++) m += "   " + o.otros[i].d + ": " + fmt(o.otros[i].m) + "\n";
     m += "   *Subtotal: " + fmt(o.ot) + "*\n";
   }
-  m += "\n\n💰 *TOTAL GASTOS: " + fmt(o.total) + "*";
+  if (o.total > 0) m += "\n\n*TOTAL GASTOS: " + fmt(o.total) + "*";
   if (o.traspasoMonto > 0) {
-    m += "\n\n🔁 *TRASPASO DE DINERO:* " + fmt(o.traspasoMonto);
-    if (o.traspasoDetalle) m += "\n   A: " + o.traspasoDetalle;
+    m += "\n\n*TRASPASO DE DINERO:* " + fmt(o.traspasoMonto);
+    if (o.traspasoTipo) m += "\n   Tipo: " + o.traspasoTipo;
+    if (o.traspasoDetalle) m += "\n   Empleado: " + o.traspasoDetalle;
   }
   if (o.cobroMonto > 0) {
-    m += "\n\n✅ *COBRO AL CLIENTE:* " + fmt(o.cobroMonto);
+    m += "\n\n*COBRO AL CLIENTE:* " + fmt(o.cobroMonto);
     if (o.cobroCliente) m += "\n   Cliente: " + o.cobroCliente;
     if (o.cobroMedio) m += "\n   Medio: " + o.cobroMedio;
   }
@@ -331,6 +340,7 @@ function enviarWsp() {
 
   var matDesc = o.mats.map(function(x){ return x.d; }).join(' / ');
   var otDesc = [matDesc, o.otros.map(function(x){ return x.d; }).join(' / ')].filter(Boolean).join(' | ');
+  var traspasoDesc = o.traspasoMonto > 0 && o.traspasoTipo ? o.traspasoTipo + (o.traspasoDetalle ? ' - ' + o.traspasoDetalle : '') : '';
 
   var filaG = [
     gf(), '', o.emp,
@@ -340,13 +350,13 @@ function enviarWsp() {
     o.pu > 0 ? o.pu : '',
     o.comida > 0 ? o.comida : '',
     o.mt > 0 ? o.mt : '',
-    otDesc || '',
+    [otDesc, traspasoDesc].filter(Boolean).join(' | ') || '',
     o.ot > 0 ? o.ot : '',
     o.traspasoMonto > 0 ? o.traspasoMonto : '',
     o.traspasoDetalle, o.total, ''
   ];
 
-  if (o.total > 0) {
+  if (o.total > 0 || o.traspasoMonto > 0) {
     fetch(SCRIPT_URL, {
       method: 'POST', mode: 'no-cors',
       headers: {'Content-Type': 'application/json'},
@@ -368,7 +378,7 @@ function enviarWsp() {
     }).catch(function() {});
   }
 
-  toast("✅ Enviado correctamente");
+  toast("Enviado correctamente");
 }
 
 function reset() {
@@ -377,6 +387,7 @@ function reset() {
   for (var i = 0; i < ids.length; i++) document.getElementById(ids[i]).value = "";
   var ns = ["uber","comb","estac","pub","comida","traspasoMonto","cobroMonto"];
   for (var i = 0; i < ns.length; i++) document.getElementById(ns[i]).value = "";
+  document.getElementById("traspasoTipo").value = "";
   document.getElementById("traspasoDetalle").value = "";
   document.getElementById("cobroMedio").value = "";
   document.getElementById("matList").innerHTML = "";
