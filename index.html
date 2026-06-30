@@ -110,6 +110,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         <option value="">Tipo de movimiento</option>
         <option>Sueldo</option>
         <option>Traspaso entre empleados</option>
+        <option>Descripción</option>
       </select>
     </div>
     <div class="sw">
@@ -123,6 +124,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         <option>Oficina</option>
       </select>
     </div>
+    <input id="traspasoDescripcion" placeholder="Descripción (opcional)" autocomplete="off">
     <div class="mw-full"><input type="number" id="traspasoMonto" placeholder="Monto" oninput="calcular()"></div>
   </div>
   <div class="total-box">
@@ -279,13 +281,15 @@ function getDatos() {
   var traspasoMonto = gv("traspasoMonto");
   var traspasoTipo = document.getElementById("traspasoTipo").value;
   var traspasoDetalle = document.getElementById("traspasoDetalle").value;
+  var traspasoDescripcion = document.getElementById("traspasoDescripcion").value.trim();
   var cobroCliente = document.getElementById("cobroCliente").value.trim();
   var cobroMonto = gv("cobroMonto");
   var cobroMedio = document.getElementById("cobroMedio").value;
   return { emp:emp, trab:trab, mats:mats, otros:otros,
            uber:uber, co:co, es:es, pu:pu, transp:transp, comida:comida,
            mt:mt, ot:ot, total:total,
-           traspasoMonto:traspasoMonto, traspasoTipo:traspasoTipo, traspasoDetalle:traspasoDetalle,
+           traspasoMonto:traspasoMonto, traspasoTipo:traspasoTipo,
+           traspasoDetalle:traspasoDetalle, traspasoDescripcion:traspasoDescripcion,
            cobroCliente:cobroCliente, cobroMonto:cobroMonto, cobroMedio:cobroMedio };
 }
 
@@ -325,6 +329,7 @@ function enviarWsp() {
     m += "\n\n*TRASPASO DE DINERO:* " + fmt(o.traspasoMonto);
     if (o.traspasoTipo) m += "\n   Tipo: " + o.traspasoTipo;
     if (o.traspasoDetalle) m += "\n   Empleado: " + o.traspasoDetalle;
+    if (o.traspasoDescripcion) m += "\n   Detalle: " + o.traspasoDescripcion;
   }
   if (o.cobroMonto > 0) {
     m += "\n\n*COBRO AL CLIENTE:* " + fmt(o.cobroMonto);
@@ -340,7 +345,8 @@ function enviarWsp() {
 
   var matDesc = o.mats.map(function(x){ return x.d; }).join(' / ');
   var otDesc = [matDesc, o.otros.map(function(x){ return x.d; }).join(' / ')].filter(Boolean).join(' | ');
-  var traspasoDesc = o.traspasoMonto > 0 && o.traspasoTipo ? o.traspasoTipo + (o.traspasoDetalle ? ' - ' + o.traspasoDetalle : '') : '';
+  var traspasoDesc = o.traspasoMonto > 0 ?
+    [o.traspasoTipo, o.traspasoDetalle, o.traspasoDescripcion].filter(Boolean).join(' - ') : '';
 
   var filaG = [
     gf(), '', o.emp,
@@ -383,7 +389,7 @@ function enviarWsp() {
 
 function reset() {
   document.getElementById("empleado").value = "";
-  var ids = ["trabajo","cobroCliente"];
+  var ids = ["trabajo","cobroCliente","traspasoDescripcion"];
   for (var i = 0; i < ids.length; i++) document.getElementById(ids[i]).value = "";
   var ns = ["uber","comb","estac","pub","comida","traspasoMonto","cobroMonto"];
   for (var i = 0; i < ns.length; i++) document.getElementById(ns[i]).value = "";
