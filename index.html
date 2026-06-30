@@ -353,7 +353,7 @@ function enviarWsp() {
     [otDesc, traspasoDesc].filter(Boolean).join(' | ') || '',
     o.ot > 0 ? o.ot : '',
     o.traspasoMonto > 0 ? o.traspasoMonto : '',
-    o.traspasoDetalle, o.total, ''
+    o.traspasoDetalle, o.total + (o.traspasoMonto || 0), ''
   ];
 
   if (o.total > 0 || o.traspasoMonto > 0) {
