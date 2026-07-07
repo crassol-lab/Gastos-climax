@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GestorBase — Guión de Demo</title>
+<style>
+:root {
+  --navy: #0C1A2E;
+  --blue: #2563EB;
+  --blue-bg: #EFF6FF;
+  --blue-border: #BFDBFE;
+  --gold: #B8965A;
+  --gold-bg: #FDF8F0;
+  --gold-border: #E8D5B0;
+  --green: #16A34A;
+  --green-bg: #F0FDF4;
+  --green-border: #BBF7D0;
+  --red: #DC2626;
+  --red-bg: #FEF2F2;
+  --red-border: #FECACA;
+  --bg: #F4F2EF;
+  --surface: #FFFFFF;
+  --text: #0C1A2E;
+  --text2: #3D4A5C;
+  --text3: #7A8A9A;
+  --border: #DDD9D3;
+  --rule: #E8E4DF;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.55; }
+
+.doc { max-width: 800px; margin: 32px auto; display: flex; flex-direction: column; gap: 0; }
+
+.doc-header { background: var(--navy); padding: 36px 48px 32px; border-radius: 12px 12px 0 0; }
+.doc-header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 24px; }
+.doc-logo { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+.doc-title { font-family: Georgia, serif; font-size: 28px; font-weight: normal; color: #fff; line-height: 1.15; }
+.doc-badges { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 100px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.badge-time { background: rgba(184,150,90,.15); color: var(--gold); border: 1px solid rgba(184,150,90,.3); }
+.badge-price { background: rgba(37,99,235,.2); color: #93C5FD; border: 1px solid rgba(37,99,235,.3); }
+.phases-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.phase-chip { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 6px; padding: 6px 12px; font-size: 12px; color: rgba(255,255,255,.6); }
+.phase-chip strong { color: rgba(255,255,255,.9); font-weight: 700; }
+.phase-sep { color: rgba(255,255,255,.2); font-size: 10px; }
+
+.legend { background: var(--surface); padding: 16px 48px; border-bottom: 1px solid var(--rule); display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+.legend-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); margin-right: 4px; }
+.leg-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--text2); }
+.leg-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+.phase { background: var(--surface); border-bottom: 1px solid var(--rule); }
+.phase-header { display: grid; grid-template-columns: 56px 1fr; align-items: center; gap: 0; border-bottom: 1px solid var(--rule); }
+.phase-time { background: var(--navy); color: var(--gold); font-size: 13px; font-weight: 800; text-align: center; padding: 14px 0; font-variant-numeric: tabular-nums; letter-spacing: .5px; }
+.phase-title-wrap { padding: 14px 48px 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.phase-name { font-family: Georgia, serif; font-size: 19px; font-weight: normal; color: var(--text); }
+.phase-goal { font-size: 12px; color: var(--text3); font-style: italic; }
+.phase-body { padding: 24px 48px 28px 80px; display: flex; flex-direction: column; gap: 12px; }
+
+.block { border-radius: 8px; padding: 13px 16px; font-size: 14px; line-height: 1.6; }
+.block-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
+.block-say { background: var(--blue-bg); border: 1px solid var(--blue-border); }
+.block-say .block-label { color: var(--blue); }
+.block-say p { color: #1E3A6E; }
+.block-say code { font-family: 'Courier New', monospace; font-size: 13.5px; color: #1D4ED8; font-style: italic; display: block; line-height: 1.7; }
+.block-show { background: var(--green-bg); border: 1px solid var(--green-border); }
+.block-show .block-label { color: var(--green); }
+.block-show ul { padding-left: 16px; color: #166534; }
+.block-show ul li { margin-bottom: 4px; font-size: 14px; }
+.block-tip { background: var(--gold-bg); border: 1px solid var(--gold-border); }
+.block-tip .block-label { color: #92702A; }
+.block-tip p { color: #5C4A1E; font-size: 13px; }
+.block-warn { background: var(--red-bg); border: 1px solid var(--red-border); }
+.block-warn .block-label { color: var(--red); }
+.block-warn p { color: #7F1D1D; font-size: 13px; }
+
+.obj-section { background: var(--surface); border-bottom: 1px solid var(--rule); padding: 28px 48px; }
+.obj-title { font-family: Georgia, serif; font-size: 19px; font-weight: normal; color: var(--text); margin-bottom: 20px; padding-left: 8px; border-left: 3px solid var(--red); }
+.obj-list { display: flex; flex-direction: column; gap: 16px; }
+.obj-item { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.obj-q { background: var(--bg); padding: 12px 16px; font-size: 14px; font-weight: 700; color: var(--text); border-bottom: 1px solid var(--border); }
+.obj-q::before { content: '— '; color: var(--text3); }
+.obj-a { padding: 12px 16px; font-size: 14px; color: var(--text2); line-height: 1.65; }
+.obj-a code { font-family: 'Courier New', monospace; font-size: 13.5px; color: var(--blue); font-style: italic; display: block; margin-top: 6px; line-height: 1.7; }
+
+.close-section { background: var(--navy); padding: 32px 48px; border-radius: 0 0 12px 12px; }
+.close-section h3 { font-family: Georgia, serif; font-size: 18px; font-weight: normal; color: var(--gold); margin-bottom: 16px; }
+.close-steps { display: flex; flex-direction: column; gap: 10px; }
+.close-step { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; color: rgba(255,255,255,.7); line-height: 1.6; }
+.close-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(184,150,90,.2); color: var(--gold); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+@media print {
+  body { background: white; font-size: 13px; }
+  .doc { margin: 0; max-width: 100%; }
+  .phase { break-inside: avoid; }
+  .obj-section { break-inside: avoid; }
+}
+@media (max-width: 640px) {
+  .doc-header { padding: 28px 24px; }
+  .phase-body { padding: 20px 24px; }
+  .obj-section { padding: 24px; }
+  .close-section { padding: 28px 24px; }
+  .phase-title-wrap { padding: 12px 16px; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .legend { padding: 14px 24px; }
+  .doc-badges { align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <div class="doc-header">
+    <div class="doc-header-top">
+      <div>
+        <div class="doc-logo">GestorBase</div>
+        <div class="doc-title">Guión de Demo — Venta</div>
+      </div>
+      <div class="doc-badges">
+        <span class="badge badge-time">25–30 minutos</span>
+        <span class="badge badge-price">$ 300.000 ARS</span>
+      </div>
+    </div>
+    <div class="phases-row">
+      <div class="phase-chip"><strong>5 min</strong><span class="phase-sep">·</span> Apertura</div>
+      <div class="phase-chip"><strong>10 min</strong><span class="phase-sep">·</span> Demo en vivo</div>
+      <div class="phase-chip"><strong>5 min</strong><span class="phase-sep">·</span> Su empresa</div>
+      <div class="phase-chip"><strong>5 min</strong><span class="phase-sep">·</span> Precio y cierre</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span class="legend-label">Referencias</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#BFDBFE;"></span> Qué decir</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#BBF7D0;"></span> Qué mostrar</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#E8D5B0;"></span> Tip</span>
+    <span class="leg-item"><span class="leg-dot" style="background:#FECACA;"></span> Evitar</span>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-time">5 min</div>
+      <div class="phase-title-wrap">
+        <div class="phase-name">Fase 1 — Apertura</div>
+        <div class="phase-goal">Entender el negocio antes de mostrar nada</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="block block-say">
+        <div class="block-label">Decir</div>
+        <code>Antes de mostrarte el sistema, contame un poco cómo trabajan ustedes. ¿Cuántos empleados tienen? ¿Cómo manejan los gastos hoy — planilla, papel, de memoria?</code>
+      </div>
+      <div class="block block-tip">
+        <div class="block-label">Tip</div>
+        <p>Dejá que hablen. Cuanto más cuenten, más fácil es personalizar lo que mostrás después. Tomá nota del dolor que mencionan — vas a usarlo más adelante.</p>
+      </div>
+      <div class="block block-say">
+        <div class="block-label">Decir (después de escuchar)</div>
+        <code>Bien, lo que te voy a mostrar es exactamente para eso. El sistema que tenemos nosotros funciona hace un tiempo y resuelve justo ese problema.</code>
+      </div>
+      <div class="block block-warn">
+        <div class="block-label">Evitar</div>
+        <p>No arranques mostrando el sistema sin preguntar nada. Si no sabés qué duele, no podés conectar lo que mostrás con su realidad.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-time">10 min</div>
+      <div class="phase-title-wrap">
+        <div class="phase-name">Fase 2 — Demo en vivo</div>
+        <div class="phase-goal">Mostrar el sistema real funcionando, no slides</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="block block-say">
+        <div class="block-label">Decir al arrancar</div>
+        <code>Te voy a mostrar cómo lo usamos nosotros. Todo lo que ves acá es real — datos reales de nuestra empresa.</code>
+      </div>
+      <div class="block block-show">
+        <div class="block-label">Mostrar en este orden</div>
+        <ul>
+          <li><strong>App de gastos desde el celular</strong> — abrís la app, cargás un gasto de ejemplo, guardás</li>
+          <li><strong>Google Sheets</strong> — mostrás que el dato apareció solo, en tiempo real</li>
+          <li><strong>Resumen de gastos</strong> — la tabla dinámica con totales por semana y empleado</li>
+          <li><strong>Liquidación</strong> — mostrás una semana generada con el botón del menú</li>
+          <li><strong>WhatsApp</strong> — mostrás el mensaje que se envía al empleado</li>
+          <li><strong>Agenda</strong> — cargás un turno y mostrás que aparece en Google Calendar</li>
+        </ul>
+      </div>
+      <div class="block block-say">
+        <div class="block-label">Mientras mostrás cada módulo, decir</div>
+        <code>¿Esto te serviría a vos? ¿Cómo lo hacen ustedes ahora?</code>
+      </div>
+      <div class="block block-tip">
+        <div class="block-label">Tip clave</div>
+        <p>No mostrés todo. Si en la Fase 1 te dijeron que el problema es la liquidación, empezá por ahí. Conectá cada cosa con lo que te contaron antes.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-time">5 min</div>
+      <div class="phase-title-wrap">
+        <div class="phase-name">Fase 3 — Su empresa</div>
+        <div class="phase-goal">Hacer que se imaginen con el sistema propio</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="block block-say">
+        <div class="block-label">Decir</div>
+        <code>Todo lo que te mostré está configurado para nosotros. Para vos lo armamos con tus empleados, tus categorías de gastos y tu forma de trabajar. No es una plantilla genérica.</code>
+      </div>
+      <div class="block block-say">
+        <div class="block-label">Preguntar</div>
+        <code>¿Cómo se llaman tus empleados? ¿Qué categorías de gastos manejan — combustible, materiales, viáticos?</code>
+      </div>
+      <div class="block block-tip">
+        <div class="block-label">Tip</div>
+        <p>Anotá las respuestas. Si avanza, vas a usar exactamente esos datos para configurar el sistema. Y si no avanza hoy, lo tenés para el seguimiento.</p>
+      </div>
+      <div class="block block-say">
+        <div class="block-label">Cerrar la fase</div>
+        <code>El proceso de implementación dura entre 1 y 3 días. Vos no tenés que hacer nada técnico — yo te entrego el sistema listo para usar.</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-time">5 min</div>
+      <div class="phase-title-wrap">
+        <div class="phase-name">Fase 4 — Precio y cierre</div>
+        <div class="phase-goal">Mencionar el precio con seguridad, no pedir permiso</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="block block-say">
+        <div class="block-label">Decir el precio así</div>
+        <code>La implementación completa tiene un costo de $300.000. Eso incluye todo lo que te mostré configurado para tu empresa, y el acompañamiento los primeros días para que tu equipo arranque bien.</code>
+      </div>
+      <div class="block block-tip">
+        <div class="block-label">Tip</div>
+        <p>Decí el número y callate. No lo justifiques ni lo bajes antes de que pregunten. Quien pregunta por el precio está interesado.</p>
+      </div>
+      <div class="block block-say">
+        <div class="block-label">Si preguntan por soporte mensual</div>
+        <code>Sí, si querés que sigamos ajustando el sistema con vos después de la implementación, hay un soporte mensual de $80.000. Pero no es obligatorio — el sistema queda tuyo igual.</code>
+      </div>
+      <div class="block block-say">
+        <div class="block-label">Para cerrar</div>
+        <code>¿Qué necesitás para decidir? ¿Hablarlo con alguien, ver algo más, o arrancamos?</code>
+      </div>
+      <div class="block block-warn">
+        <div class="block-label">Evitar</div>
+        <p>No ofrezcas descuento sin que te lo pidan. Si lo piden, podés ceder algo a cambio de algo — pago anticipado, testimonio, referido.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="obj-section">
+    <div class="obj-title">Objeciones frecuentes — respuestas exactas</div>
+    <div class="obj-list">
+      <div class="obj-item">
+        <div class="obj-q">Es caro para lo que es.</div>
+        <div class="obj-a">Entiendo. Cualquier software similar — Zoho, Monday, sistemas de gestión — cuesta entre $50 y $150 dólares por mes. Esto es un pago único, sin suscripción. En 3 meses ya lo amortizaste.
+          <code>¿Qué estás usando ahora para esto y cuánto te cuesta en tiempo cada semana?</code>
+        </div>
+      </div>
+      <div class="obj-item">
+        <div class="obj-q">¿Y si Google deja de funcionar o cambia algo?</div>
+        <div class="obj-a">Google Sheets tiene más de 1.500 millones de usuarios. No va a desaparecer. Y si algo cambia, el sistema se adapta — tus datos siempre están en tu Drive, no en ningún servidor nuestro.</div>
+      </div>
+      <div class="obj-item">
+        <div class="obj-q">¿Lo pueden usar mis empleados sin saber de tecnología?</div>
+        <div class="obj-a">Sí. Nosotros lo usamos así. El formulario tiene 4 o 5 campos, aprietan Guardar y listo. No hace falta entrar a Google Sheets, no hace falta crear cuenta.
+          <code>El primer día yo los acompaño para que arranquen bien.</code>
+        </div>
+      </div>
+      <div class="obj-item">
+        <div class="obj-q">Necesito pensarlo / hablarlo con mi socio.</div>
+        <div class="obj-a">Perfecto. ¿Cuándo lo hablan? Te mando el manual que tenemos para que lo puedas compartir. Y si quieren otra videollamada con el socio, lo coordinamos.
+          <code>¿Para cuándo podrían tener una respuesta?</code>
+        </div>
+      </div>
+      <div class="obj-item">
+        <div class="obj-q">¿Puedo probarlo antes de pagar?</div>
+        <div class="obj-a">La demo que te hice es la prueba — es el sistema real, no una maqueta. No hacemos versiones de prueba porque el trabajo de configurar ya es parte de la implementación. Lo que sí puedo hacer es empezar con un módulo y si no quedás conforme, paramos.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="close-section">
+    <h3>Después de la llamada — en las próximas 2 horas</h3>
+    <div class="close-steps">
+      <div class="close-step"><div class="close-num">1</div><div>Mandá el manual por WhatsApp con un mensaje corto: <em style="color:rgba(255,255,255,.5);">"Acá te mando el detalle de todo lo que vimos hoy."</em></div></div>
+      <div class="close-step"><div class="close-num">2</div><div>Si no respondió en 48 horas, seguimiento: <em style="color:rgba(255,255,255,.5);">"¿Pudiste charlarlo? Cualquier duda que te surja te respondo."</em></div></div>
+      <div class="close-step"><div class="close-num">3</div><div>Si dijo que sí: pedí el 50% adelantado para empezar la configuración. El resto al entregar.</div></div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
