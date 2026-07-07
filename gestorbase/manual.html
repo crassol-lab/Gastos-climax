@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GestorBase — Manual del Sistema</title>
+<style>
+:root {
+  --navy: #0C1A2E;
+  --blue: #2563EB;
+  --blue-light: #EFF6FF;
+  --gold: #B8965A;
+  --gold-light: #FDF8F0;
+  --bg: #F4F2EF;
+  --surface: #FFFFFF;
+  --text: #0C1A2E;
+  --text2: #3D4A5C;
+  --text3: #7A8A9A;
+  --border: #D8D3CC;
+  --rule: #E4E0DA;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; }
+
+.doc { max-width: 780px; margin: 40px auto; background: var(--surface); box-shadow: 0 4px 40px rgba(12,26,46,.12); }
+
+.cover { background: var(--navy); padding: 72px 64px 56px; position: relative; overflow: hidden; }
+.cover::after { content: ''; position: absolute; right: -60px; bottom: -80px; width: 320px; height: 320px; border-radius: 50%; border: 1.5px solid rgba(184,150,90,.2); }
+.cover::before { content: ''; position: absolute; right: 20px; bottom: -20px; width: 200px; height: 200px; border-radius: 50%; border: 1px solid rgba(37,99,235,.2); }
+.cover-logo { font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 48px; }
+.cover h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 48px; font-weight: normal; line-height: 1.1; color: #fff; text-wrap: balance; margin-bottom: 20px; letter-spacing: -0.5px; }
+.cover h1 strong { color: var(--gold); font-weight: normal; }
+.cover-sub { font-size: 16px; color: rgba(255,255,255,.5); max-width: 400px; line-height: 1.6; margin-bottom: 56px; }
+.cover-meta { display: flex; gap: 40px; flex-wrap: wrap; }
+.cover-meta-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,.3); margin-bottom: 4px; }
+.cover-meta-value { font-size: 14px; font-weight: 600; color: rgba(255,255,255,.75); }
+
+.toc { padding: 48px 64px; border-bottom: 1px solid var(--rule); }
+.toc-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 24px; }
+.toc-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.toc-list li { display: flex; align-items: baseline; font-size: 14px; }
+.toc-list a { color: var(--text2); text-decoration: none; display: flex; align-items: baseline; gap: 8px; width: 100%; padding: 6px 0; transition: color .15s; }
+.toc-list a:hover { color: var(--blue); }
+.toc-num { font-size: 11px; font-weight: 700; color: var(--blue); width: 20px; flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1px dotted var(--border); margin: 0 8px; margin-bottom: 3px; }
+.toc-page { font-size: 12px; color: var(--text3); flex-shrink: 0; }
+
+.section { padding: 52px 64px; border-bottom: 1px solid var(--rule); }
+.section:last-child { border-bottom: none; }
+.sec-eyebrow { display: flex; align-items: center; gap: 10px; font-size: 10px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: var(--blue); margin-bottom: 14px; }
+.sec-num { width: 22px; height: 22px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sec-title { font-family: Georgia, 'Times New Roman', serif; font-size: 30px; font-weight: normal; color: var(--text); line-height: 1.15; letter-spacing: -0.3px; text-wrap: balance; margin-bottom: 20px; }
+.sec-body { font-size: 15px; color: var(--text2); line-height: 1.75; max-width: 600px; }
+.sec-body p + p { margin-top: 14px; }
+
+.highlight { background: var(--gold-light); border-left: 3px solid var(--gold); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 28px 0; font-size: 14px; color: var(--text2); line-height: 1.65; }
+.highlight strong { color: var(--navy); }
+
+.mod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 32px; }
+.mod-card { border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+.mod-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.mod-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.mod-name { font-size: 14px; font-weight: 800; color: var(--text); }
+.mod-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.mod-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
+.mod-tag { font-size: 10px; font-weight: 600; letter-spacing: .3px; padding: 3px 8px; border-radius: 100px; background: var(--bg); color: var(--text3); border: 1px solid var(--border); }
+
+.steps { display: flex; flex-direction: column; gap: 0; margin-top: 32px; }
+.step { display: grid; grid-template-columns: 44px 1fr; gap: 20px; padding-bottom: 32px; position: relative; }
+.step:last-child { padding-bottom: 0; }
+.step-col { display: flex; flex-direction: column; align-items: center; }
+.step-circle { width: 36px; height: 36px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 14px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.step-line { width: 1px; flex: 1; min-height: 20px; background: var(--border); margin-top: 6px; }
+.step:last-child .step-line { display: none; }
+.step-body { padding-top: 6px; }
+.step-body h4 { font-size: 16px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.step-body p { font-size: 14px; color: var(--text2); line-height: 1.65; }
+
+.req-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+.req-item { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; color: var(--text2); padding: 14px 16px; background: var(--bg); border-radius: 8px; }
+.req-check { width: 20px; height: 20px; border-radius: 50%; background: #DCFCE7; color: #16A34A; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+.faq { display: flex; flex-direction: column; gap: 0; margin-top: 28px; }
+.faq-item { padding: 18px 0; border-bottom: 1px solid var(--rule); }
+.faq-item:last-child { border-bottom: none; }
+.faq-q { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.faq-a { font-size: 14px; color: var(--text2); line-height: 1.65; }
+
+.impl-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 28px; }
+.impl-card { background: var(--blue-light); border-radius: 10px; padding: 20px; }
+.impl-day { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+.impl-card h4 { font-size: 14px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+.impl-card p { font-size: 13px; color: #3D5A80; line-height: 1.6; }
+
+.contact-box { background: var(--navy); border-radius: 12px; padding: 36px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; margin-top: 28px; }
+.contact-box p { font-size: 15px; color: rgba(255,255,255,.65); line-height: 1.65; max-width: 420px; }
+.contact-wsp { display: inline-flex; align-items: center; gap: 10px; background: #25D366; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: 700; }
+
+@media print {
+  body { background: white; }
+  .doc { box-shadow: none; margin: 0; max-width: 100%; }
+  .section { break-inside: avoid; }
+  .cover { break-after: page; }
+  .toc { break-after: page; }
+  a { color: inherit; text-decoration: none; }
+}
+@media (max-width: 640px) {
+  .cover { padding: 48px 28px 40px; }
+  .cover h1 { font-size: 32px; }
+  .section { padding: 40px 28px; }
+  .toc { padding: 36px 28px; }
+  .mod-grid { grid-template-columns: 1fr; }
+  .impl-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <div class="cover">
+    <div class="cover-logo">GestorBase</div>
+    <h1>Sistema de gestión para empresas de <strong>servicios</strong></h1>
+    <p class="cover-sub">Manual informativo para empresas interesadas en implementar GestorBase en su operación.</p>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><div class="cover-meta-label">Versión</div><div class="cover-meta-value">1.0 — 2026</div></div>
+      <div class="cover-meta-item"><div class="cover-meta-label">Tecnología</div><div class="cover-meta-value">Google Sheets + GitHub Pages</div></div>
+      <div class="cover-meta-item"><div class="cover-meta-label">Costo mensual</div><div class="cover-meta-value">$0</div></div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contenido</div>
+    <ul class="toc-list">
+      <li><a href="#que-es"><span class="toc-num">1</span> ¿Qué es GestorBase?<span class="toc-dots"></span><span class="toc-page">Pág. 1</span></a></li>
+      <li><a href="#modulos"><span class="toc-num">2</span> Módulos incluidos<span class="toc-dots"></span><span class="toc-page">Pág. 2</span></a></li>
+      <li><a href="#como-funciona"><span class="toc-num">3</span> ¿Cómo funciona?<span class="toc-dots"></span><span class="toc-page">Pág. 3</span></a></li>
+      <li><a href="#requisitos"><span class="toc-num">4</span> Requisitos<span class="toc-dots"></span><span class="toc-page">Pág. 4</span></a></li>
+      <li><a href="#implementacion"><span class="toc-num">5</span> Proceso de implementación<span class="toc-dots"></span><span class="toc-page">Pág. 5</span></a></li>
+      <li><a href="#faq"><span class="toc-num">6</span> Preguntas frecuentes<span class="toc-dots"></span><span class="toc-page">Pág. 6</span></a></li>
+      <li><a href="#contacto"><span class="toc-num">7</span> Contacto<span class="toc-dots"></span><span class="toc-page">Pág. 7</span></a></li>
+    </ul>
+  </div>
+
+  <div class="section" id="que-es">
+    <div class="sec-eyebrow"><div class="sec-num">1</div> Introducción</div>
+    <h2 class="sec-title">¿Qué es GestorBase?</h2>
+    <div class="sec-body">
+      <p>GestorBase es un sistema de gestión diseñado específicamente para empresas de servicios chicas y medianas. Permite registrar gastos, liquidar sueldos, organizar la agenda de trabajos y hacer seguimiento de cobros — todo desde el celular, sin instalar ninguna aplicación.</p>
+      <p>El sistema funciona sobre Google Sheets como base de datos y GitHub Pages para las apps de carga. No tiene servidores propios, no tiene suscripción mensual y los datos siempre quedan en el Google Drive de la empresa.</p>
+    </div>
+    <div class="highlight"><strong>Pensado para el trabajo real:</strong> los empleados cargan datos desde el celular en el campo. El dueño ve todo en tiempo real desde su computadora o teléfono, sin necesidad de llamar o pedir reportes.</div>
+    <div class="sec-body"><p>GestorBase no es un software genérico. Cada implementación se configura para el negocio: los empleados, las categorías de gastos, los formularios y los reportes se adaptan a cómo trabaja la empresa, no al revés.</p></div>
+  </div>
+
+  <div class="section" id="modulos">
+    <div class="sec-eyebrow"><div class="sec-num">2</div> Módulos</div>
+    <h2 class="sec-title">Módulos incluidos</h2>
+    <div class="sec-body"><p>GestorBase incluye seis módulos integrados entre sí. Los datos de un módulo se usan automáticamente en los demás — sin duplicar información, sin copiar y pegar.</p></div>
+    <div class="mod-grid">
+      <div class="mod-card"><div class="mod-card-head"><div class="mod-icon" style="background:#EFF6FF;">💰</div><div class="mod-name">Control de Gastos</div></div><div class="mod-desc">Cada empleado registra sus gastos del día: combustible, materiales, comida, transporte.</div><div class="mod-tags"><span class="mod-tag">Por empleado</span><span class="mod-tag">Por categoría</span><span class="mod-tag">Semana actual</span></div></div>
+      <div class="mod-card"><div class="mod-card-head"><div class="mod-icon" style="background:#F0FDF4;">📋</div><div class="mod-name">Liquidación Semanal</div></div><div class="mod-desc">El sistema calcula automáticamente cuánto cobró cada empleado, cuánto gastó y cuál es su saldo. Se envía por WhatsApp en un clic.</div><div class="mod-tags"><span class="mod-tag">Auto-calculada</span><span class="mod-tag">WhatsApp</span><span class="mod-tag">Saldo acumulado</span></div></div>
+      <div class="mod-card"><div class="mod-card-head"><div class="mod-icon" style="background:#FFF7ED;">📅</div><div class="mod-name">Agenda de Trabajos</div></div><div class="mod-desc">Turnos con cliente, dirección, horario y empleados asignados. Se sincroniza automáticamente con Google Calendar.</div><div class="mod-tags"><span class="mod-tag">Google Calendar</span><span class="mod-tag">Multi-empleado</span></div></div>
+      <div class="mod-card"><div class="mod-card-head"><div class="mod-icon" style="background:#FDF4FF;">💳</div><div class="mod-name">Registro de Cobros</div></div><div class="mod-desc">Los empleados registran los cobros recibidos. Se descuentan automáticamente en la liquidación semanal.</div><div class="mod-tags"><span class="mod-tag">Por cliente</span><span class="mod-tag">Vinculado a liquidación</span></div></div>
+      <div class="mod-card"><div class="mod-card-head"><div class="mod-icon" style="background:#FFF1F2;">📊</div><div class="mod-name">Resumen de Gastos</div></div><div class="mod-desc">Tabla dinámica con totales por semana, por empleado y por categoría.</div><div class="mod-tags"><span class="mod-tag">Tabla dinámica</span><span class="mod-tag">Por semana</span></div></div>
+      <div class="mod-card"><div class="mod-card-head"><div class="mod-icon" style="background:#F0FDF4;">🔍</div><div class="mod-name">Informes de Trabajos</div></div><div class="mod-desc">Historial completo de trabajos con presupuestos, estados y detalles técnicos. Consultable por cliente o por fecha.</div><div class="mod-tags"><span class="mod-tag">Historial</span><span class="mod-tag">Presupuestos</span></div></div>
+    </div>
+  </div>
+
+  <div class="section" id="como-funciona">
+    <div class="sec-eyebrow"><div class="sec-num">3</div> Funcionamiento</div>
+    <h2 class="sec-title">¿Cómo funciona en el día a día?</h2>
+    <div class="sec-body"><p>El sistema está diseñado para ser usado sin capacitación larga. Los empleados aprenden a usarlo en minutos porque los formularios son mínimos: solo piden lo que hace falta.</p></div>
+    <div class="steps">
+      <div class="step"><div class="step-col"><div class="step-circle">1</div><div class="step-line"></div></div><div class="step-body"><h4>El empleado abre la app desde su celular</h4><p>Tiene un acceso directo guardado en la pantalla de inicio. Se abre como una aplicación normal, sin descargar nada, sin crear cuenta.</p></div></div>
+      <div class="step"><div class="step-col"><div class="step-circle">2</div><div class="step-line"></div></div><div class="step-body"><h4>Carga el dato una sola vez</h4><p>Un gasto, un cobro, un turno nuevo. El formulario tiene solo los campos necesarios. Aprieta "Guardar" y el dato queda registrado automáticamente.</p></div></div>
+      <div class="step"><div class="step-col"><div class="step-circle">3</div><div class="step-line"></div></div><div class="step-body"><h4>El dueño ve todo en tiempo real</h4><p>Desde Google Sheets — en la computadora o en el celular — los datos aparecen al instante. Sin pedir reportes.</p></div></div>
+      <div class="step"><div class="step-col"><div class="step-circle">4</div><div class="step-line"></div></div><div class="step-body"><h4>Cierre semanal en un clic</h4><p>El dueño genera la nueva semana desde un botón. El sistema copia sueldos, resetea gastos y calcula saldos. La liquidación se envía por WhatsApp.</p></div></div>
+    </div>
+  </div>
+
+  <div class="section" id="requisitos">
+    <div class="sec-eyebrow"><div class="sec-num">4</div> Requisitos</div>
+    <h2 class="sec-title">¿Qué necesita la empresa para usarlo?</h2>
+    <div class="sec-body"><p>GestorBase no requiere servidores, hosting propio ni contratos con proveedores de software. Solo se necesita lo que probablemente ya tenés:</p></div>
+    <ul class="req-list">
+      <li class="req-item"><div class="req-check">✓</div><div><strong>Una cuenta de Google</strong> — para Google Sheets y Google Calendar. Puede ser una cuenta existente o se crea una nueva para la empresa.</div></li>
+      <li class="req-item"><div class="req-check">✓</div><div><strong>Celulares con internet</strong> — cualquier smartphone con navegador (Android o iPhone). No requiere versión específica.</div></li>
+      <li class="req-item"><div class="req-check">✓</div><div><strong>WhatsApp instalado</strong> — para el envío de liquidaciones. No requiere WhatsApp Business.</div></li>
+      <li class="req-item"><div class="req-check">✓</div><div><strong>Nada más</strong> — sin instalar aplicaciones, sin contratos anuales, sin hardware especial.</div></li>
+    </ul>
+    <div class="highlight"><strong>Costo mensual: $0.</strong> El sistema corre sobre Google Sheets (gratuito) y GitHub Pages (gratuito). El único costo es el de implementación y configuración inicial, que se paga una sola vez.</div>
+  </div>
+
+  <div class="section" id="implementacion">
+    <div class="sec-eyebrow"><div class="sec-num">5</div> Implementación</div>
+    <h2 class="sec-title">¿Qué pasa cuando contratás?</h2>
+    <div class="sec-body"><p>El proceso de implementación dura entre 1 y 3 días hábiles. No requiere presencia física.</p></div>
+    <div class="impl-row">
+      <div class="impl-card"><div class="impl-day">Día 1</div><h4>Relevamiento</h4><p>Charlamos sobre cómo trabaja la empresa: empleados, categorías, flujos. Definimos qué módulos activar.</p></div>
+      <div class="impl-card"><div class="impl-day">Día 2</div><h4>Configuración</h4><p>Se arma el Google Sheets, se configura el sistema con los datos reales y se publican las apps.</p></div>
+      <div class="impl-card"><div class="impl-day">Día 3</div><h4>Puesta en marcha</h4><p>Se entrega acceso al dueño, se comparten los links a los empleados y se hace acompañamiento inicial.</p></div>
+    </div>
+    <div class="sec-body" style="margin-top:24px;"><p>Después de la implementación, se ofrece soporte por WhatsApp para ajustes y consultas.</p></div>
+  </div>
+
+  <div class="section" id="faq">
+    <div class="sec-eyebrow"><div class="sec-num">6</div> Preguntas frecuentes</div>
+    <h2 class="sec-title">Lo que más nos preguntan</h2>
+    <div class="faq">
+      <div class="faq-item"><div class="faq-q">¿Mis datos son seguros? ¿Quién puede verlos?</div><div class="faq-a">Los datos viven en tu propio Google Drive. Nadie tiene acceso salvo vos y quien vos autorices. Podés revocar permisos en cualquier momento.</div></div>
+      <div class="faq-item"><div class="faq-q">¿Qué pasa si Google cambia algo o deja de funcionar?</div><div class="faq-a">Todas las plataformas usadas son servicios masivos con años de estabilidad. En el caso improbable de un cambio, el sistema se puede adaptar. Y en el peor caso, tus datos ya están en Excel.</div></div>
+      <div class="faq-item"><div class="faq-q">¿Se puede usar sin internet?</div><div class="faq-a">No. El sistema requiere conexión para guardar datos. Para cargar nuevos registros se necesita internet.</div></div>
+      <div class="faq-item"><div class="faq-q">¿Funciona en iPhone?</div><div class="faq-a">Sí. Las apps funcionan en cualquier navegador moderno, tanto Android como iOS. No requieren ninguna instalación.</div></div>
+      <div class="faq-item"><div class="faq-q">¿Puedo agregar un empleado nuevo después?</div><div class="faq-a">Sí. Agregar empleados, cambiar categorías o modificar sueldos son ajustes simples que se hacen directamente en el sistema.</div></div>
+      <div class="faq-item"><div class="faq-q">¿Lo pueden usar empresas de rubros distintos al de limpieza?</div><div class="faq-a">Sí. GestorBase está adaptado a cualquier empresa de servicios con empleados en campo: plomería, electricidad, jardinería, delivery, construcción, mantenimiento, y más.</div></div>
+      <div class="faq-item"><div class="faq-q">¿Tiene contrato de permanencia?</div><div class="faq-a">No. El sistema es tuyo una vez implementado. No hay suscripción, no hay contrato. Seguís pagando solo si querés soporte o nuevos módulos.</div></div>
+    </div>
+  </div>
+
+  <div class="section" id="contacto">
+    <div class="sec-eyebrow"><div class="sec-num">7</div> Contacto</div>
+    <h2 class="sec-title">Pedí tu demo personalizada</h2>
+    <div class="sec-body">
+      <p>Antes de tomar una decisión, podés pedir una demo sin compromiso. Te mostramos el sistema funcionando con los datos de tu empresa: tus empleados, tus categorías, tu flujo de trabajo.</p>
+      <p>La demo es gratuita y se hace por videollamada o presencialmente si estás en Rosario.</p>
+    </div>
+    <div class="contact-box">
+      <p>Contactanos por WhatsApp para coordinar una demo o resolver cualquier duda antes de implementar.</p>
+      <a class="contact-wsp" href="https://wa.me/540346415689697?text=Hola%2C%20vi%20el%20manual%20de%20GestorBase%20y%20quiero%20pedir%20una%20demo." target="_blank">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        Escribir por WhatsApp
+      </a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
