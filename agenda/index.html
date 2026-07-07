@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agenda Climax</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#003b8e;--accent:#0057d9;--gray:#f0f2f7;--white:#fff;--text:#1a1a2e;--muted:#6b7280;--border:#dde2ec;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"DM Sans",sans-serif;background:var(--gray);color:var(--text);padding-bottom:40px;}
+header{background:var(--blue);color:white;padding:20px;text-align:center;position:sticky;top:0;z-index:10;box-shadow:0 2px 12px rgba(0,59,142,.25);}
+header h1{font-size:20px;font-weight:700;}
+.fh{font-family:"DM Mono",monospace;font-size:12px;opacity:.75;margin-top:4px;}
+.tabs{display:flex;gap:0;background:var(--blue);padding:0 16px;}
+.tab{flex:1;padding:10px;text-align:center;color:rgba(255,255,255,.6);font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;}
+.tab.activa{color:white;border-bottom:3px solid white;}
+.container{max-width:500px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:14px;}
+.card{background:var(--white);border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,59,142,.10);border:1px solid var(--border);}
+.ct{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--blue);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.num{background:var(--blue);color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+input[type=text],input[type=date],input[type=time],textarea,select{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-family:"DM Sans",sans-serif;color:var(--text);background:#fafbff;margin-bottom:10px;appearance:none;-webkit-appearance:none;}
+input[type=text]:focus,input[type=date]:focus,input[type=time]:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);background:#fff;}
+textarea{resize:vertical;min-height:90px;}
+.sw{position:relative;margin-bottom:10px;}
+.sw select{margin-bottom:0;}
+.sw::after{content:"v";position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.two-col label{font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;}
+.two-col input{margin-bottom:0;}
+.checks{display:flex;flex-direction:column;gap:12px;}
+.check-label{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;background:#fafbff;cursor:pointer;user-select:none;transition:border-color .15s,background .15s;}
+.check-label input[type=checkbox]{width:22px;height:22px;margin:0;accent-color:var(--blue);flex-shrink:0;}
+.check-label span{font-size:15px;font-weight:500;}
+.check-label.activo{border-color:var(--accent);background:#f0f4ff;}
+.btns{display:flex;flex-direction:column;gap:10px;}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;border:none;border-radius:12px;font-size:15px;font-family:"DM Sans",sans-serif;font-weight:700;cursor:pointer;}
+.bg{background:var(--accent);color:white;}
+.br{background:transparent;color:var(--muted);border:1.5px solid var(--border);font-size:14px;padding:12px;}
+.footer{text-align:center;font-size:12px;color:var(--muted);margin-top:6px;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a2e;color:white;padding:12px 22px;border-radius:30px;font-size:14px;font-weight:500;z-index:200;transition:transform .3s;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.turno-card{background:var(--white);border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,59,142,.08);border:1px solid var(--border);margin-bottom:12px;}
+.turno-fecha{font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.turno-cliente{font-size:17px;font-weight:700;margin-bottom:4px;}
+.turno-detalle{font-size:13px;color:var(--muted);margin-bottom:2px;}
+.turno-acciones{display:flex;gap:8px;margin-top:12px;}
+.btn-editar{flex:1;padding:10px;border:1.5px solid var(--accent);border-radius:10px;background:transparent;color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;}
+.btn-borrar{flex:1;padding:10px;border:1.5px solid #ef4444;border-radius:10px;background:transparent;color:#ef4444;font-size:14px;font-weight:600;cursor:pointer;}
+.loading{text-align:center;color:var(--muted);padding:30px;font-size:15px;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;}
+.modal-bg.open{display:flex;}
+.modal{background:white;border-radius:20px 20px 0 0;padding:24px;width:100%;max-height:90vh;overflow-y:auto;}
+.modal-titulo{font-size:17px;font-weight:700;margin-bottom:16px;color:var(--blue);}
+.modal-btns{display:flex;gap:10px;margin-top:10px;}
+.btn-guardar{flex:1;padding:14px;background:var(--accent);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;}
+.btn-cancelar{flex:1;padding:14px;background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;}
+.cal-container{max-width:500px;margin:0 auto;padding:16px;}
+.cal-header{display:flex;align-items:center;justify-content:space-between;background:var(--white);border-radius:16px;padding:16px 20px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,59,142,.10);border:1px solid var(--border);}
+.cal-mes{font-size:17px;font-weight:700;color:var(--blue);}
+.cal-nav{background:none;border:none;font-size:22px;cursor:pointer;color:var(--blue);padding:4px 10px;border-radius:8px;}
+.cal-nav:active{background:var(--gray);}
+.cal-grid-wrap{background:var(--white);border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,59,142,.10);border:1px solid var(--border);margin-bottom:12px;}
+.cal-dias-semana{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:8px;}
+.cal-dia-nombre{text-align:center;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:4px 0;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-celda{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;position:relative;padding:4px;}
+.cal-celda:active{background:var(--gray);}
+.cal-celda.vacio{cursor:default;}
+.cal-celda.hoy{background:var(--accent);color:white;}
+.cal-celda.hoy .cal-num{color:white;}
+.cal-celda.seleccionado{background:#e8f0ff;border:2px solid var(--accent);}
+.cal-celda.tiene-turnos .cal-dot{display:block;}
+.cal-num{font-size:15px;font-weight:600;color:var(--text);}
+.cal-celda.vacio .cal-num{color:transparent;}
+.cal-dot{display:none;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-top:2px;}
+.cal-celda.hoy .cal-dot{background:white;}
+.cal-turnos-dia{background:var(--white);border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,59,142,.10);border:1px solid var(--border);}
+.cal-turnos-titulo{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--blue);margin-bottom:12px;}
+.cal-turno-item{padding:14px;border:1px solid var(--border);border-radius:12px;margin-bottom:10px;background:#fafbff;}
+.cal-turno-item:last-child{margin-bottom:0;}
+.cal-turno-hora{font-size:12px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+.cal-turno-cliente{font-size:16px;font-weight:700;margin-bottom:4px;}
+.cal-turno-det{font-size:13px;color:var(--muted);margin-bottom:2px;}
+.cal-turno-gcal{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;padding:10px;background:#f0f4ff;border-radius:10px;border:1.5px solid var(--accent);color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;}
+.cal-vacio-dia{text-align:center;color:var(--muted);padding:20px;font-size:14px;}
+</style>
+</head>
+<body>
+<header>
+  <img src="../logo.png" alt="Climax" style="height:48px;display:block;margin:0 auto 6px;">
+  <h1>📅 Agenda Climax</h1>
+  <div class="fh" id="fh">-</div>
+</header>
+<div class="tabs">
+  <div class="tab activa" id="tab-cargar" onclick="verTab('cargar')">➕ Cargar</div>
+  <div class="tab" id="tab-cal" onclick="verTab('cal')">📅 Calendario</div>
+  <div class="tab" id="tab-ver" onclick="verTab('ver')">📋 Turnos</div>
+</div>
+
+<div id="pantalla-cargar">
+<div class="container">
+  <div class="card">
+    <div class="ct"><span class="num">1</span> ¿Quién carga?</div>
+    <div class="sw">
+      <select id="cargador">
+        <option value="">Seleccionar</option>
+        <option>Lionel</option>
+        <option>Antonella</option>
+        <option>Hector</option>
+        <option>Brian</option>
+        <option>Leo</option>
+      </select>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct"><span class="num">2</span> 📅 Fecha y horario</div>
+    <div class="two-col">
+      <div><label>Fecha</label><input type="date" id="fecha"></div>
+      <div></div>
+    </div>
+    <div class="two-col">
+      <div><label>Hora inicio</label><input type="time" id="horaInicio"></div>
+      <div><label>Hora fin</label><input type="time" id="horaFin"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct"><span class="num">3</span> 👷 ¿Quién va al trabajo?</div>
+    <div class="checks">
+      <label class="check-label" id="lbl-lionel">
+        <input type="checkbox" id="lionel" onchange="toggleCheck('lbl-lionel',this)">
+        <span>Lionel</span>
+      </label>
+      <label class="check-label" id="lbl-brian">
+        <input type="checkbox" id="brian" onchange="toggleCheck('lbl-brian',this)">
+        <span>Brian</span>
+      </label>
+      <label class="check-label" id="lbl-leo">
+        <input type="checkbox" id="leo" onchange="toggleCheck('lbl-leo',this)">
+        <span>Leo</span>
+      </label>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct"><span class="num">4</span> 👤 Cliente</div>
+    <input type="text" id="cliente" placeholder="Nombre del cliente" autocomplete="off">
+  </div>
+  <div class="card">
+    <div class="ct"><span class="num">5</span> 📍 Dirección</div>
+    <input type="text" id="direccion" placeholder="Calle y número" autocomplete="off">
+  </div>
+  <div class="card">
+    <div class="ct"><span class="num">6</span> 📝 Observaciones</div>
+    <textarea id="obs" placeholder="Tipo de trabajo, aclaraciones, etc."></textarea>
+  </div>
+  <div class="card" style="padding:16px">
+    <div class="btns">
+      <button class="btn bg" onclick="enviar()">📅 Guardar turno</button>
+      <button class="btn br" onclick="resetForm()">🔄 Nuevo turno</button>
+    </div>
+  </div>
+  <div class="footer">Uso interno - Climax Service</div>
+</div>
+</div>
+
+<div id="pantalla-cal" style="display:none">
+  <div class="cal-container">
+    <div class="cal-header">
+      <button class="cal-nav" onclick="calMes(-1)">‹</button>
+      <div class="cal-mes" id="cal-mes-titulo">-</div>
+      <button class="cal-nav" onclick="calMes(1)">›</button>
+    </div>
+    <div class="cal-grid-wrap">
+      <div class="cal-dias-semana">
+        <div class="cal-dia-nombre">Dom</div>
+        <div class="cal-dia-nombre">Lun</div>
+        <div class="cal-dia-nombre">Mar</div>
+        <div class="cal-dia-nombre">Mié</div>
+        <div class="cal-dia-nombre">Jue</div>
+        <div class="cal-dia-nombre">Vie</div>
+        <div class="cal-dia-nombre">Sáb</div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+    <div class="cal-turnos-dia" id="cal-turnos-dia">
+      <div class="cal-turnos-titulo" id="cal-turnos-titulo">Seleccioná un día</div>
+      <div id="cal-turnos-lista"><div class="cal-vacio-dia">Tocá un día para ver los turnos</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="pantalla-ver" style="display:none">
+<div class="container">
+  <div id="lista-turnos"><div class="loading">Cargando turnos...</div></div>
+</div>
+</div>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-titulo">✏️ Editar turno</div>
+    <input type="hidden" id="edit-idx">
+    <label style="font-size:12px;font-weight:600;color:var(--muted)">FECHA</label>
+    <input type="date" id="edit-fecha">
+    <label style="font-size:12px;font-weight:600;color:var(--muted)">HORA INICIO</label>
+    <input type="time" id="edit-inicio">
+    <label style="font-size:12px;font-weight:600;color:var(--muted)">HORA FIN</label>
+    <input type="time" id="edit-fin">
+    <label style="font-size:12px;font-weight:600;color:var(--muted)">CLIENTE</label>
+    <input type="text" id="edit-cliente">
+    <label style="font-size:12px;font-weight:600;color:var(--muted)">DIRECCIÓN</label>
+    <input type="text" id="edit-dir">
+    <label style="font-size:12px;font-weight:600;color:var(--muted)">EMPLEADOS</label>
+    <input type="text" id="edit-emp">
+    <label style="font-size:12px;font-weight:600;color:var(--muted)">OBSERVACIONES</label>
+    <input type="text" id="edit-obs">
+    <div class="modal-btns">
+      <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-guardar" onclick="guardarEdicion()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var yaEnviado = false;
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwghzMmqhWKA6iedADhQ_M-U5kSa8pY6MoySoG3Ec-fY4MsfP2dyuV0hUsDsipzmyhQ/exec';
+var turnos = [];
+var calAnio = new Date().getFullYear();
+var calMesActual = new Date().getMonth();
+var calDiaSeleccionado = null;
+var calTurnosCargados = false;
+var MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function verTab(tab) {
+  document.getElementById('pantalla-cargar').style.display = tab === 'cargar' ? '' : 'none';
+  document.getElementById('pantalla-cal').style.display = tab === 'cal' ? '' : 'none';
+  document.getElementById('pantalla-ver').style.display = tab === 'ver' ? '' : 'none';
+  document.getElementById('tab-cargar').classList.toggle('activa', tab === 'cargar');
+  document.getElementById('tab-cal').classList.toggle('activa', tab === 'cal');
+  document.getElementById('tab-ver').classList.toggle('activa', tab === 'ver');
+  if (tab === 'ver') cargarTurnos();
+  if (tab === 'cal') { if (!calTurnosCargados) { cargarTurnosCalendario(); } else { renderCalendario(); } }
+}
+
+function cargarTurnosCalendario() {
+  fetch(SCRIPT_URL + '?hoja=Agenda')
+    .then(function(r){ return r.json(); })
+    .then(function(data){ turnos = data; calTurnosCargados = true; renderCalendario(); })
+    .catch(function(){ renderCalendario(); });
+}
+
+function calMes(dir) {
+  calMesActual += dir;
+  if (calMesActual > 11) { calMesActual = 0; calAnio++; }
+  if (calMesActual < 0) { calMesActual = 11; calAnio--; }
+  calDiaSeleccionado = null;
+  renderCalendario();
+}
+
+function parseFecha(f) {
+  if (!f) return null;
+  var p = f.split('/');
+  if (p.length === 3) return { d: parseInt(p[0]), m: parseInt(p[1])-1, a: parseInt(p[2]) };
+  return null;
+}
+
+function turnosPorDia(dia) {
+  return turnos.filter(function(t) {
+    var f = parseFecha(t[0]);
+    return f && f.d === dia && f.m === calMesActual && f.a === calAnio;
+  });
+}
+
+function renderCalendario() {
+  document.getElementById('cal-mes-titulo').textContent = MESES[calMesActual] + ' ' + calAnio;
+  var grid = document.getElementById('cal-grid');
+  var hoy = new Date();
+  var primerDia = new Date(calAnio, calMesActual, 1).getDay();
+  var diasEnMes = new Date(calAnio, calMesActual + 1, 0).getDate();
+  var html = '';
+  for (var i = 0; i < primerDia; i++) html += '<div class="cal-celda vacio"><span class="cal-num"> </span></div>';
+  for (var d = 1; d <= diasEnMes; d++) {
+    var esHoy = (d === hoy.getDate() && calMesActual === hoy.getMonth() && calAnio === hoy.getFullYear());
+    var esSel = calDiaSeleccionado === d;
+    var tieneTurnos = turnosPorDia(d).length > 0;
+    var clases = 'cal-celda' + (esHoy ? ' hoy' : '') + (esSel ? ' seleccionado' : '') + (tieneTurnos ? ' tiene-turnos' : '');
+    html += '<div class="' + clases + '" onclick="selDia(' + d + ')"><span class="cal-num">' + d + '</span><span class="cal-dot"></span></div>';
+  }
+  grid.innerHTML = html;
+  if (calDiaSeleccionado) { mostrarTurnosDia(calDiaSeleccionado); }
+  else {
+    document.getElementById('cal-turnos-titulo').textContent = 'Seleccioná un día';
+    document.getElementById('cal-turnos-lista').innerHTML = '<div class="cal-vacio-dia">Tocá un día para ver los turnos</div>';
+  }
+}
+
+function selDia(d) { calDiaSeleccionado = d; renderCalendario(); }
+
+function mostrarTurnosDia(d) {
+  var tsDia = turnosPorDia(d);
+  var nombresDias = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  var diaSemana = new Date(calAnio, calMesActual, d).getDay();
+  document.getElementById('cal-turnos-titulo').textContent = nombresDias[diaSemana] + ' ' + d + ' de ' + MESES[calMesActual].toLowerCase();
+  if (!tsDia.length) { document.getElementById('cal-turnos-lista').innerHTML = '<div class="cal-vacio-dia">Sin turnos este día</div>'; return; }
+  var html = '';
+  tsDia.forEach(function(t) {
+    var hora = t[1] ? (t[1] + (t[2] ? ' - ' + t[2] : '')) : '';
+    var gcalUrl = 'https://calendar.google.com/calendar/r/day/' + calAnio + '/' + (calMesActual+1) + '/' + d;
+    html += '<div class="cal-turno-item">';
+    if (hora) html += '<div class="cal-turno-hora">⏰ ' + hora + '</div>';
+    html += '<div class="cal-turno-cliente">' + (t[3] || '-') + '</div>';
+    if (t[4]) html += '<div class="cal-turno-det">📍 ' + t[4] + '</div>';
+    if (t[5]) html += '<div class="cal-turno-det">👷 ' + t[5] + '</div>';
+    if (t[6]) html += '<div class="cal-turno-det">📝 ' + t[6] + '</div>';
+    html += '<a class="cal-turno-gcal" href="' + gcalUrl + '" target="_blank">📅 Ver en Google Calendar</a>';
+    html += '</div>';
+  });
+  document.getElementById('cal-turnos-lista').innerHTML = html;
+}
+
+function cargarTurnos() {
+  document.getElementById('lista-turnos').innerHTML = '<div class="loading">Cargando turnos...</div>';
+  fetch(SCRIPT_URL + '?hoja=Agenda')
+    .then(function(r){ return r.json(); })
+    .then(function(data){ turnos = data; calTurnosCargados = true; renderTurnos(); })
+    .catch(function(){ document.getElementById('lista-turnos').innerHTML = '<div class="loading">Error al cargar. Revisá la conexión.</div>'; });
+}
+
+function renderTurnos() {
+  var el = document.getElementById('lista-turnos');
+  if (!turnos.length) { el.innerHTML = '<div class="loading">No hay turnos cargados.</div>'; return; }
+  var html = '';
+  var sorted = turnos.slice().map(function(t,i){ return {t:t,i:i}; }).sort(function(a,b){ return a.t[0] < b.t[0] ? 1 : -1; });
+  sorted.forEach(function(item){
+    var t = item.t, i = item.i;
+    var horario = t[1] ? (t[1] + (t[2] ? ' - ' + t[2] : '')) : '';
+    html += '<div class="turno-card">';
+    html += '<div class="turno-fecha">📅 ' + (t[0]||'-') + (horario ? ' &nbsp;⏰ ' + horario : '') + '</div>';
+    html += '<div class="turno-cliente">' + (t[3]||'-') + '</div>';
+    if (t[4]) html += '<div class="turno-detalle">📍 ' + t[4] + '</div>';
+    if (t[5]) html += '<div class="turno-detalle">👷 ' + t[5] + '</div>';
+    if (t[6]) html += '<div class="turno-detalle">📝 ' + t[6] + '</div>';
+    if (t[7]) html += '<div class="turno-detalle" style="margin-top:4px;font-size:11px;">Cargado por: ' + t[7] + '</div>';
+    html += '<div class="turno-acciones"><button class="btn-editar" onclick="abrirEditar(' + i + ')">✏️ Editar</button><button class="btn-borrar" onclick="borrar(' + i + ')">🗑 Borrar</button></div>';
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function abrirEditar(i) {
+  var t = turnos[i];
+  document.getElementById('edit-idx').value = i;
+  document.getElementById('edit-fecha').value = fechaParaInput(t[0]);
+  document.getElementById('edit-inicio').value = t[1]||'';
+  document.getElementById('edit-fin').value = t[2]||'';
+  document.getElementById('edit-cliente').value = t[3]||'';
+  document.getElementById('edit-dir').value = t[4]||'';
+  document.getElementById('edit-emp').value = t[5]||'';
+  document.getElementById('edit-obs').value = t[6]||'';
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function cerrarModal() { document.getElementById('modal-bg').classList.remove('open'); }
+
+function fechaParaInput(f) {
+  if (!f) return '';
+  var p = f.split('/');
+  if (p.length === 3) return p[2] + '-' + p[1] + '-' + p[0];
+  return f;
+}
+
+function guardarEdicion() {
+  var i = parseInt(document.getElementById('edit-idx').value);
+  var fv = document.getElementById('edit-fecha').value;
+  var fechaFmt = fv ? fv.split('-').reverse().join('/') : '';
+  var valores = [fechaFmt, document.getElementById('edit-inicio').value, document.getElementById('edit-fin').value,
+    document.getElementById('edit-cliente').value, document.getElementById('edit-dir').value,
+    document.getElementById('edit-emp').value, document.getElementById('edit-obs').value, turnos[i][7]||''];
+  fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ hoja:'Agenda', accion:'editar', fila:i, valores:valores })
+  }).then(function(){ turnos[i]=valores; renderTurnos(); cerrarModal(); toast("Turno actualizado"); })
+  .catch(function(){ toast("Error al guardar"); });
+}
+
+function borrar(i) {
+  if (!confirm("¿Borrar este turno?")) return;
+  fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ hoja:'Agenda', accion:'eliminar', fila:i })
+  }).then(function(){ turnos.splice(i,1); renderTurnos(); toast("Turno eliminado"); })
+  .catch(function(){ toast("Error al borrar"); });
+}
+
+function toggleCheck(lblId, cb) {
+  document.getElementById(lblId).classList.toggle('activo', cb.checked);
+}
+
+function ini() {
+  var a = new Date();
+  var d = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
+  var mo = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  document.getElementById("fh").textContent = d[a.getDay()] + " " + a.getDate() + " de " + mo[a.getMonth()] + " " + a.getFullYear();
+  if (!document.getElementById("fecha").value) {
+    var h = new Date();
+    document.getElementById("fecha").value = h.getFullYear() + "-" + pad(h.getMonth()+1) + "-" + pad(h.getDate());
+  }
+}
+function pad(n){ return String(n).padStart(2,"0"); }
+ini();
+setInterval(ini, 60000);
+
+function gf() {
+  var v = document.getElementById("fecha").value;
+  if (!v) return "";
+  var p = v.split("-");
+  return p[2] + "/" + p[1] + "/" + p[0];
+}
+
+function getEmpleados() {
+  var r = [];
+  if (document.getElementById("lionel").checked) r.push("Lionel");
+  if (document.getElementById("brian").checked) r.push("Brian");
+  if (document.getElementById("leo").checked) r.push("Leo");
+  return r.join(", ");
+}
+
+function enviar() {
+  var cargador = document.getElementById("cargador").value;
+  if (!cargador) { toast("Selecciona quien carga"); return; }
+  var cliente = document.getElementById("cliente").value.trim();
+  if (!cliente) { toast("Ingresa el nombre del cliente"); return; }
+  var fecha = gf();
+  if (!fecha) { toast("Selecciona la fecha"); return; }
+  if (yaEnviado) { toast("Ya fue enviado. Toca Nuevo turno."); return; }
+  var fila = [fecha, document.getElementById("horaInicio").value, document.getElementById("horaFin").value,
+    cliente, document.getElementById("direccion").value.trim(), getEmpleados(),
+    document.getElementById("obs").value.trim(), cargador];
+  fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ hoja:'Agenda', fila:fila })
+  }).catch(function(){});
+  yaEnviado = true;
+  calTurnosCargados = false;
+  toast("✅ Turno guardado en Sheets y Calendar");
+}
+
+function resetForm() {
+  document.getElementById("cargador").value = "";
+  document.getElementById("cliente").value = "";
+  document.getElementById("direccion").value = "";
+  document.getElementById("obs").value = "";
+  document.getElementById("horaInicio").value = "";
+  document.getElementById("horaFin").value = "";
+  ["lionel","brian","leo"].forEach(function(id){
+    document.getElementById(id).checked = false;
+    document.getElementById("lbl-" + id).classList.remove("activo");
+  });
+  yaEnviado = false;
+  document.getElementById("fecha").value = "";
+  ini();
+  toast("Formulario reiniciado");
+}
+
+function toast(msg) {
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(function(){ t.classList.remove("show"); }, 2500);
+}
+</script>
+</body>
+</html>
