@@ -1,6 +1,6 @@
 {
-  "name": "Agenda Climax",
-  "short_name": "Agenda",
+  "name": "Climax Service",
+  "short_name": "Climax",
   "icons": [
     {
       "src": "climaxlogoicono.jpg",
@@ -8,7 +8,7 @@
       "type": "image/jpeg"
     }
   ],
-  "start_url": "/Gastos-climax/agenda/",
+  "start_url": "/Gastos-climax/hub/",
   "display": "standalone",
   "background_color": "#003b8e",
   "theme_color": "#003b8e"
