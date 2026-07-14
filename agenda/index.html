@@ -86,6 +86,15 @@ textarea{resize:vertical;min-height:90px;}
 .cal-turno-det{font-size:13px;color:var(--muted);margin-bottom:2px;}
 .cal-turno-gcal{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;padding:10px;background:#f0f4ff;border-radius:10px;border:1.5px solid var(--accent);color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;}
 .cal-vacio-dia{text-align:center;color:var(--muted);padding:20px;font-size:14px;}
+.respaldo-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:flex-end;}
+.respaldo-modal.open{display:flex;}
+.respaldo-contenido{background:white;border-radius:20px 20px 0 0;padding:24px;width:100%;max-height:85vh;overflow-y:auto;}
+.respaldo-titulo{font-size:17px;font-weight:700;color:var(--blue);margin-bottom:4px;}
+.respaldo-sub{font-size:12px;color:var(--muted);margin-bottom:16px;}
+.respaldo-item{padding:12px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:#fafbff;font-size:13px;}
+.respaldo-item-fecha{font-weight:700;color:var(--blue);margin-bottom:4px;}
+.respaldo-item-det{color:var(--text);}
+.respaldo-cerrar{width:100%;padding:14px;background:var(--blue);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;}
 </style>
 </head>
 <body>
@@ -175,6 +184,7 @@ textarea{resize:vertical;min-height:90px;}
     <div class="btns">
       <button class="btn bg" onclick="enviar()">📅 Guardar turno</button>
       <button class="btn br" onclick="resetForm()">🔄 Nuevo turno</button>
+      <button class="btn br" onclick="verRespaldo()">💾 Ver respaldo local</button>
     </div>
   </div>
   <div class="footer">Uso interno - Climax Service</div>
@@ -238,6 +248,15 @@ textarea{resize:vertical;min-height:90px;}
   </div>
 </div>
 
+<div class="respaldo-modal" id="respaldo-modal">
+  <div class="respaldo-contenido">
+    <div class="respaldo-titulo">💾 Respaldo local - Agenda</div>
+    <div class="respaldo-sub" id="respaldo-sub">-</div>
+    <div id="respaldo-lista"></div>
+    <button class="respaldo-cerrar" onclick="cerrarRespaldo()">Cerrar</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -249,6 +268,50 @@ var calMesActual = new Date().getMonth();
 var calDiaSeleccionado = null;
 var calTurnosCargados = false;
 var MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function guardarRespaldo(fila) {
+  var clave = 'respaldo_agenda';
+  var datos = JSON.parse(localStorage.getItem(clave) || '[]');
+  var tresAnios = 3 * 365 * 24 * 60 * 60 * 1000;
+  var ahora = Date.now();
+  datos = datos.filter(function(e){ return (ahora - e.ts) < tresAnios; });
+  datos.push({ ts: ahora, fila: fila });
+  localStorage.setItem(clave, JSON.stringify(datos));
+}
+
+function verRespaldo() {
+  var clave = 'respaldo_agenda';
+  var datos = JSON.parse(localStorage.getItem(clave) || '[]');
+  var modal = document.getElementById('respaldo-modal');
+  var lista = document.getElementById('respaldo-lista');
+  var sub = document.getElementById('respaldo-sub');
+  sub.textContent = datos.length + ' turno(s) guardado(s) en este dispositivo';
+  if (!datos.length) {
+    lista.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;">No hay datos en el respaldo local.</div>';
+  } else {
+    var html = '';
+    var sorted = datos.slice().reverse();
+    sorted.forEach(function(e) {
+      var f = e.fila;
+      var fecha = new Date(e.ts);
+      var fechaStr = fecha.getDate() + '/' + (fecha.getMonth()+1) + '/' + fecha.getFullYear() + ' ' + fecha.getHours() + ':' + String(fecha.getMinutes()).padStart(2,'0');
+      html += '<div class="respaldo-item">';
+      html += '<div class="respaldo-item-fecha">📅 ' + (f[0]||'-') + (f[1] ? ' &nbsp;⏰ ' + f[1] : '') + (f[2] ? ' - ' + f[2] : '') + '</div>';
+      html += '<div class="respaldo-item-det">👤 ' + (f[3]||'-') + '</div>';
+      if (f[4]) html += '<div class="respaldo-item-det">📍 ' + f[4] + '</div>';
+      if (f[5]) html += '<div class="respaldo-item-det">👷 ' + f[5] + '</div>';
+      if (f[6]) html += '<div class="respaldo-item-det">📝 ' + f[6] + '</div>';
+      if (f[7]) html += '<div class="respaldo-item-det" style="font-size:11px;color:var(--muted)">Cargado por: ' + f[7] + ' · ' + fechaStr + '</div>';
+      html += '</div>';
+    });
+    lista.innerHTML = html;
+  }
+  modal.classList.add('open');
+}
+
+function cerrarRespaldo() {
+  document.getElementById('respaldo-modal').classList.remove('open');
+}
 
 function verTab(tab) {
   document.getElementById('pantalla-cargar').style.display = tab === 'cargar' ? '' : 'none';
@@ -453,6 +516,7 @@ function enviar() {
   var fila = [fecha, document.getElementById("horaInicio").value, document.getElementById("horaFin").value,
     cliente, document.getElementById("direccion").value.trim(), getEmpleados(),
     document.getElementById("obs").value.trim(), cargador];
+  guardarRespaldo(fila);
   fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ hoja:'Agenda', fila:fila })
   }).catch(function(){});
