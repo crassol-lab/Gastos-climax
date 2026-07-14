@@ -77,6 +77,7 @@
   .btn-primary { background: var(--blue); color: white; }
   .btn-whatsapp { background: #25d366; color: white; }
   .btn-reset { background: transparent; color: var(--muted); border: 1.5px solid var(--border); font-size: 14px; padding: 12px; }
+  .btn-respaldo { background: transparent; color: var(--blue); border: 1.5px solid var(--blue); font-size: 14px; padding: 12px; }
 
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,20,50,.55); z-index: 100; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
   .modal-overlay.open { display: flex; }
@@ -93,6 +94,10 @@
   .estado-presupuesto { background: #fff8e1; color: #b45309; }
   .estado-reagendar { background: #eff6ff; color: #1d4ed8; }
 
+  .respaldo-modal { background: white; border-radius: 22px 22px 0 0; padding: 28px 22px 36px; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; animation: slideUp .25s ease; }
+  .respaldo-item { background: var(--gray-bg); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; font-size: 14px; line-height: 1.6; border-left: 4px solid var(--blue); }
+  .respaldo-item .respaldo-fecha { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+
   .footer { text-align: center; font-size: 12px; color: var(--muted); margin-top: 6px; }
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a2e; color: white; padding: 12px 22px; border-radius: 30px; font-size: 14px; font-weight: 500; z-index: 200; transition: transform .3s ease; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); }
@@ -101,7 +106,7 @@
 <body>
 
 <header>
-  <img src="data:image/jpeg;base64,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" alt="Climax" style="height:48px;margin-bottom:6px;display:block;margin-left:auto;margin-right:auto;">
+  <img src="data:image/jpeg;base64,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" alt="Climax" style="height:48px;margin-bottom:6px;display:block;margin-left:auto;margin-right:auto;">
   <h1>Informe de Servicio</h1>
   <div class="fecha-hora" id="fechaHora">—</div>
 </header>
@@ -215,6 +220,7 @@
         Enviar por WhatsApp
       </button>
       <button class="btn btn-reset" onclick="resetForm()">🔄 Nuevo informe</button>
+      <button class="btn btn-respaldo" onclick="verRespaldo()">💾 Ver respaldo local</button>
     </div>
   </div>
 
@@ -237,11 +243,21 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="respaldoOverlay" onclick="cerrarRespaldo(event)">
+  <div class="respaldo-modal">
+    <div class="modal-header">
+      <h2>💾 Respaldo local de informes</h2>
+      <button class="modal-close" onclick="cerrarRespaldoBtn()">✕</button>
+    </div>
+    <div id="respaldoContenido"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
   function actualizarFecha() {
-    const ahora = new Date();
+    var ahora = new Date();
     document.getElementById('fechaHora').textContent =
       ahora.toLocaleDateString('es-AR', { weekday:'long', year:'numeric', month:'long', day:'numeric' }) +
       ' · ' + ahora.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
@@ -249,112 +265,147 @@
   actualizarFecha();
   setInterval(actualizarFecha, 60000);
 
-  const hoy = new Date();
+  var hoy = new Date();
   document.getElementById('fechaServicio').value =
-    `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+    hoy.getFullYear() + '-' + String(hoy.getMonth()+1).padStart(2,'0') + '-' + String(hoy.getDate()).padStart(2,'0');
 
   function getFechaFormateada() {
-    const val = document.getElementById('fechaServicio').value;
+    var val = document.getElementById('fechaServicio').value;
     if (!val) return new Date().toLocaleDateString('es-AR');
-    const [y,m,d] = val.split('-');
-    return `${d}/${m}/${y}`;
+    var parts = val.split('-');
+    return parts[2] + '/' + parts[1] + '/' + parts[0];
   }
 
   function mostrarSubtipo() {
-    const val = document.getElementById('equipo').value;
+    var val = document.getElementById('equipo').value;
     document.getElementById('subtipo-aa').classList.toggle('visible', val === 'Aire acondicionado');
     document.getElementById('subtipo-calefactor').classList.toggle('visible', val === 'Calefactor');
     document.getElementById('subtipo-caldera').classList.toggle('visible', val === 'Caldera');
   }
 
   function getEquipoCompleto() {
-    const tipo = document.getElementById('equipo').value;
+    var tipo = document.getElementById('equipo').value;
     if (tipo === 'Caldera') {
-      const sub = document.getElementById('subtipo-caldera-sel').value;
-      const simple = document.getElementById('subtipo-caldera-simple-sel').value;
-      if (sub === 'Simple' && simple) return `Caldera – Simple – ${simple}`;
-      return sub ? `Caldera – ${sub}` : 'Caldera';
+      var sub = document.getElementById('subtipo-caldera-sel').value;
+      var simple = document.getElementById('subtipo-caldera-simple-sel').value;
+      if (sub === 'Simple' && simple) return 'Caldera – Simple – ' + simple;
+      return sub ? 'Caldera – ' + sub : 'Caldera';
     }
-    const map = { 'Aire acondicionado':'subtipo-aa-sel', 'Calefactor':'subtipo-calefactor-sel' };
+    var map = { 'Aire acondicionado':'subtipo-aa-sel', 'Calefactor':'subtipo-calefactor-sel' };
     if (map[tipo]) {
-      const sub = document.getElementById(map[tipo]).value;
-      return sub ? `${tipo} – ${sub}` : tipo;
+      var sub2 = document.getElementById(map[tipo]).value;
+      return sub2 ? tipo + ' – ' + sub2 : tipo;
     }
     return tipo;
   }
 
   function mostrarSubtipoCaldera() {
-    const val = document.getElementById('subtipo-caldera-sel').value;
+    var val = document.getElementById('subtipo-caldera-sel').value;
     document.getElementById('subtipo-caldera-simple').classList.toggle('visible', val === 'Simple');
   }
 
   function mostrarPresupuesto() {
-    const estado = document.getElementById('estado').value;
+    var estado = document.getElementById('estado').value;
     document.getElementById('presupuestoDetalle').classList.toggle('visible', estado === 'Requiere presupuesto');
   }
 
-  document.querySelectorAll('.problem-btn').forEach(btn => {
-    btn.addEventListener('click', () => btn.classList.toggle('selected'));
+  document.querySelectorAll('.problem-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() { btn.classList.toggle('selected'); });
   });
   function getProblemas() {
-    return [...document.querySelectorAll('.problem-btn.selected')].map(b => b.dataset.valor);
+    return Array.from(document.querySelectorAll('.problem-btn.selected')).map(function(b) { return b.dataset.valor; });
   }
 
   function mostrarFoto(input) {
-    const nombre = input.files[0]?.name || '';
-    document.getElementById('foto-nombre').textContent = nombre ? `✓ ${nombre}` : '';
+    var nombre = input.files[0] ? input.files[0].name : '';
+    document.getElementById('foto-nombre').textContent = nombre ? '✓ ' + nombre : '';
     document.getElementById('fotoAviso').classList.toggle('visible', !!nombre);
   }
 
+  function guardarRespaldo(fila) {
+    var clave = 'respaldo_informes';
+    var datos = JSON.parse(localStorage.getItem(clave) || '[]');
+    var tresAnios = 3 * 365 * 24 * 60 * 60 * 1000;
+    var ahora = Date.now();
+    datos = datos.filter(function(e) { return (ahora - e.ts) < tresAnios; });
+    datos.push({ ts: ahora, fila: fila });
+    localStorage.setItem(clave, JSON.stringify(datos));
+  }
+
+  function verRespaldo() {
+    var clave = 'respaldo_informes';
+    var datos = JSON.parse(localStorage.getItem(clave) || '[]');
+    var tresAnios = 3 * 365 * 24 * 60 * 60 * 1000;
+    var ahora = Date.now();
+    datos = datos.filter(function(e) { return (ahora - e.ts) < tresAnios; });
+    datos.sort(function(a, b) { return b.ts - a.ts; });
+    var html = '';
+    if (datos.length === 0) {
+      html = '<p style="color:var(--muted);text-align:center;padding:20px 0">No hay informes guardados en este dispositivo.</p>';
+    } else {
+      datos.forEach(function(e) {
+        var fecha = new Date(e.ts).toLocaleString('es-AR');
+        var fila = e.fila || [];
+        html += '<div class="respaldo-item">';
+        html += '<div class="respaldo-fecha">Guardado: ' + fecha + '</div>';
+        if (fila[0]) html += '<strong>📅 Fecha servicio:</strong> ' + fila[0] + '<br>';
+        if (fila[2]) html += '<strong>👷 Técnico:</strong> ' + fila[2] + '<br>';
+        if (fila[3]) html += '<strong>👤 Cliente:</strong> ' + fila[3] + '<br>';
+        if (fila[5]) html += '<strong>🔧 Equipo:</strong> ' + fila[5] + '<br>';
+        if (fila[8]) html += '<strong>📝 Trabajo:</strong> ' + fila[8] + '<br>';
+        if (fila[9]) html += '<strong>✅ Estado:</strong> ' + fila[9];
+        html += '</div>';
+      });
+    }
+    document.getElementById('respaldoContenido').innerHTML = html;
+    document.getElementById('respaldoOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function cerrarRespaldo(e) { if (e.target === document.getElementById('respaldoOverlay')) cerrarRespaldoBtn(); }
+  function cerrarRespaldoBtn() { document.getElementById('respaldoOverlay').classList.remove('open'); document.body.style.overflow = ''; }
+
   function verResumen() {
-    const cliente = document.getElementById('cliente').value.trim();
-    const equipo = getEquipoCompleto();
-    const estado = document.getElementById('estado').value;
+    var cliente = document.getElementById('cliente').value.trim();
+    var equipo = getEquipoCompleto();
+    var estado = document.getElementById('estado').value;
     if (!cliente || !equipo || !estado) { mostrarToast('⚠️ Completá cliente, equipo y estado final'); return; }
 
-    const telefono = document.getElementById('telefono').value.trim();
-    const direccion = document.getElementById('direccion').value.trim();
-    const localidad = document.getElementById('localidad').value.trim();
-    const marca = document.getElementById('marca').value.trim();
-    const modelo = document.getElementById('modelo').value.trim();
-    const capacidad = document.getElementById('capacidad').value.trim();
-    const tecnico = document.getElementById('tecnico').value.trim();
-    const trabajo = document.getElementById('trabajo').value.trim();
-    const repuesto = document.getElementById('repuesto').value.trim();
-    const observacion = document.getElementById('observacion').value.trim();
-    const presupuestoTexto = document.getElementById('presupuestoTexto').value.trim();
-    const problemas = getProblemas();
-    const horaInicio = document.getElementById('horaInicio').value;
-    const horaFin = document.getElementById('horaFin').value;
+    var telefono = document.getElementById('telefono').value.trim();
+    var direccion = document.getElementById('direccion').value.trim();
+    var localidad = document.getElementById('localidad').value.trim();
+    var marca = document.getElementById('marca').value.trim();
+    var modelo = document.getElementById('modelo').value.trim();
+    var capacidad = document.getElementById('capacidad').value.trim();
+    var tecnico = document.getElementById('tecnico').value.trim();
+    var trabajo = document.getElementById('trabajo').value.trim();
+    var repuesto = document.getElementById('repuesto').value.trim();
+    var observacion = document.getElementById('observacion').value.trim();
+    var presupuestoTexto = document.getElementById('presupuestoTexto').value.trim();
+    var problemas = getProblemas();
+    var horaInicio = document.getElementById('horaInicio').value;
+    var horaFin = document.getElementById('horaFin').value;
 
-    const estadoClass = estado.includes('Resuelto') ? 'Resuelto' : estado.includes('presupuesto') ? 'presupuesto' : 'reagendar';
-    const equipoExtra = [marca, modelo, capacidad].filter(Boolean).join(' · ');
-    const ubicacion = [direccion, localidad].filter(Boolean).join(', ');
+    var estadoClass = estado.includes('Resuelto') ? 'Resuelto' : estado.includes('presupuesto') ? 'presupuesto' : 'reagendar';
+    var equipoExtra = [marca, modelo, capacidad].filter(Boolean).join(' · ');
+    var ubicacion = [direccion, localidad].filter(Boolean).join(', ');
 
-    let html = `
-      <div class="resumen-bloque"><strong>📅 Fecha</strong>${getFechaFormateada()}</div>
-      ${(horaInicio||horaFin) ? `<div class="resumen-bloque"><strong>🕐 Horario</strong>Inicio: ${horaInicio||'—'} · Fin: ${horaFin||'—'}</div>` : ''}
-      <div class="resumen-bloque">
-        <strong>👤 Cliente</strong>
-        ${cliente}
-        ${telefono ? `<br>📞 ${telefono}` : ''}
-        ${ubicacion ? `<br>📍 ${ubicacion}` : ''}
-      </div>
-      <div class="resumen-bloque">
-        <strong>🔧 Equipo</strong>${equipo}
-        ${equipoExtra ? `<br><span style="color:var(--muted);font-size:13px">${equipoExtra}</span>` : ''}
-      </div>
-      ${problemas.length ? `<div class="resumen-bloque"><strong>⚠️ Problema(s)</strong>${problemas.join(' · ')}</div>` : ''}
-      ${trabajo ? `<div class="resumen-bloque"><strong>📝 Trabajo realizado</strong>${trabajo}</div>` : ''}
-      ${repuesto ? `<div class="resumen-bloque"><strong>🔩 Repuesto necesario</strong>${repuesto}</div>` : ''}
-      ${observacion ? `<div class="resumen-bloque"><strong>💬 Observaciones</strong>${observacion}</div>` : ''}
-      <div class="resumen-bloque">
-        <strong>✅ Estado final</strong>
-        <span class="estado-badge estado-${estadoClass}">${estado}</span>
-      </div>
-      ${presupuestoTexto ? `<div class="resumen-bloque" style="border:1.5px solid #fde68a"><strong>💰 A presupuestar</strong>${presupuestoTexto}</div>` : ''}
-      ${tecnico ? `<div class="resumen-bloque"><strong>👷 Técnico</strong>${tecnico}</div>` : ''}
-    `;
+    var html = '<div class="resumen-bloque"><strong>📅 Fecha</strong>' + getFechaFormateada() + '</div>';
+    if (horaInicio || horaFin) html += '<div class="resumen-bloque"><strong>🕐 Horario</strong>Inicio: ' + (horaInicio||'—') + ' · Fin: ' + (horaFin||'—') + '</div>';
+    html += '<div class="resumen-bloque"><strong>👤 Cliente</strong>' + cliente;
+    if (telefono) html += '<br>📞 ' + telefono;
+    if (ubicacion) html += '<br>📍 ' + ubicacion;
+    html += '</div>';
+    html += '<div class="resumen-bloque"><strong>🔧 Equipo</strong>' + equipo;
+    if (equipoExtra) html += '<br><span style="color:var(--muted);font-size:13px">' + equipoExtra + '</span>';
+    html += '</div>';
+    if (problemas.length) html += '<div class="resumen-bloque"><strong>⚠️ Problema(s)</strong>' + problemas.join(' · ') + '</div>';
+    if (trabajo) html += '<div class="resumen-bloque"><strong>📝 Trabajo realizado</strong>' + trabajo + '</div>';
+    if (repuesto) html += '<div class="resumen-bloque"><strong>🔩 Repuesto necesario</strong>' + repuesto + '</div>';
+    if (observacion) html += '<div class="resumen-bloque"><strong>💬 Observaciones</strong>' + observacion + '</div>';
+    html += '<div class="resumen-bloque"><strong>✅ Estado final</strong><span class="estado-badge estado-' + estadoClass + '">' + estado + '</span></div>';
+    if (presupuestoTexto) html += '<div class="resumen-bloque" style="border:1.5px solid #fde68a"><strong>💰 A presupuestar</strong>' + presupuestoTexto + '</div>';
+    if (tecnico) html += '<div class="resumen-bloque"><strong>👷 Técnico</strong>' + tecnico + '</div>';
 
     document.getElementById('resumenContenido').innerHTML = html;
     document.getElementById('modalOverlay').classList.add('open');
@@ -365,43 +416,41 @@
   function cerrarModalBtn() { document.getElementById('modalOverlay').classList.remove('open'); document.body.style.overflow = ''; }
 
   function enviarWhatsApp() {
-    const cliente = document.getElementById('cliente').value.trim();
-    const telefono = document.getElementById('telefono').value.trim();
-    const direccion = document.getElementById('direccion').value.trim();
-    const localidad = document.getElementById('localidad').value.trim();
-    const equipo = getEquipoCompleto();
-    const marca = document.getElementById('marca').value.trim();
-    const modelo = document.getElementById('modelo').value.trim();
-    const capacidad = document.getElementById('capacidad').value.trim();
-    const tecnico = document.getElementById('tecnico').value.trim();
-    const trabajo = document.getElementById('trabajo').value.trim();
-    const repuesto = document.getElementById('repuesto').value.trim();
-    const observacion = document.getElementById('observacion').value.trim();
-    const estado = document.getElementById('estado').value;
-    const presupuestoTexto = document.getElementById('presupuestoTexto').value.trim();
-    const problemas = getProblemas();
-    const horaInicio = document.getElementById('horaInicio').value;
-    const horaFin = document.getElementById('horaFin').value;
-    const ubicacion = [direccion, localidad].filter(Boolean).join(', ');
-    const equipoExtra = [marca, modelo, capacidad].filter(Boolean).join(' · ');
+    var cliente = document.getElementById('cliente').value.trim();
+    var telefono = document.getElementById('telefono').value.trim();
+    var direccion = document.getElementById('direccion').value.trim();
+    var localidad = document.getElementById('localidad').value.trim();
+    var equipo = getEquipoCompleto();
+    var marca = document.getElementById('marca').value.trim();
+    var modelo = document.getElementById('modelo').value.trim();
+    var capacidad = document.getElementById('capacidad').value.trim();
+    var tecnico = document.getElementById('tecnico').value.trim();
+    var trabajo = document.getElementById('trabajo').value.trim();
+    var repuesto = document.getElementById('repuesto').value.trim();
+    var observacion = document.getElementById('observacion').value.trim();
+    var estado = document.getElementById('estado').value;
+    var presupuestoTexto = document.getElementById('presupuestoTexto').value.trim();
+    var problemas = getProblemas();
+    var horaInicio = document.getElementById('horaInicio').value;
+    var horaFin = document.getElementById('horaFin').value;
+    var ubicacion = [direccion, localidad].filter(Boolean).join(', ');
+    var equipoExtra = [marca, modelo, capacidad].filter(Boolean).join(' · ');
 
-    let msg = `*⚙️ INFORME DE SERVICIO*\n`;
-    msg += `📅 ${getFechaFormateada()}\n`;
-    if (horaInicio || horaFin) msg += `🕐 Inicio: ${horaInicio||'—'}  |  Fin: ${horaFin||'—'}\n`;
-    msg += `\n👤 *Cliente:* ${cliente}\n`;
-    if (telefono) msg += `📞 *Tel:* ${telefono}\n`;
-    if (ubicacion) msg += `📍 *Dirección:* ${ubicacion}\n`;
-    msg += `\n🔧 *Equipo:* ${equipo}\n`;
-    if (equipoExtra) msg += `   ${equipoExtra}\n`;
-    if (problemas.length) msg += `⚠️ *Problema:* ${problemas.join(', ')}\n`;
-    if (trabajo) msg += `\n📝 *Trabajo realizado:*\n${trabajo}\n`;
-    if (repuesto) msg += `\n🔩 *Repuesto necesario:* ${repuesto}\n`;
-    if (observacion) msg += `\n💬 *Observaciones:*\n${observacion}\n`;
-    msg += `\n✅ *Estado:* ${estado}`;
-    if (presupuestoTexto) msg += `\n💰 *A presupuestar:*\n${presupuestoTexto}`;
-    if (tecnico) msg += `\n\n👷 *Técnico:* ${tecnico}`;
-
-    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    var msg = '*⚙️ INFORME DE SERVICIO*\n';
+    msg += '📅 ' + getFechaFormateada() + '\n';
+    if (horaInicio || horaFin) msg += '🕐 Inicio: ' + (horaInicio||'—') + '  |  Fin: ' + (horaFin||'—') + '\n';
+    msg += '\n👤 *Cliente:* ' + cliente + '\n';
+    if (telefono) msg += '📞 *Tel:* ' + telefono + '\n';
+    if (ubicacion) msg += '📍 *Dirección:* ' + ubicacion + '\n';
+    msg += '\n🔧 *Equipo:* ' + equipo + '\n';
+    if (equipoExtra) msg += '   ' + equipoExtra + '\n';
+    if (problemas.length) msg += '⚠️ *Problema:* ' + problemas.join(', ') + '\n';
+    if (trabajo) msg += '\n📝 *Trabajo realizado:*\n' + trabajo + '\n';
+    if (repuesto) msg += '\n🔩 *Repuesto necesario:* ' + repuesto + '\n';
+    if (observacion) msg += '\n💬 *Observaciones:*\n' + observacion + '\n';
+    msg += '\n✅ *Estado:* ' + estado;
+    if (presupuestoTexto) msg += '\n💰 *A presupuestar:*\n' + presupuestoTexto;
+    if (tecnico) msg += '\n\n👷 *Técnico:* ' + tecnico;
 
     var fila = [
       getFechaFormateada(),
@@ -417,6 +466,11 @@
       repuesto,
       observacion + (presupuestoTexto ? ' | A presupuestar: ' + presupuestoTexto : '')
     ];
+
+    guardarRespaldo(fila);
+
+    window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+
     fetch('https://script.google.com/macros/s/AKfycbyIF1-gdPJU41pJLZaAG1IhgYTlEvrUltcu2OqBappTz4Hni9GBMPg2ODHfQu23SikF/exec', {
       method: 'POST',
       mode: 'no-cors',
@@ -427,30 +481,30 @@
 
   function resetForm() {
     ['cliente','telefono','direccion','localidad','marca','modelo','capacidad',
-     'tecnico','trabajo','repuesto','observacion','presupuestoTexto'].forEach(id => document.getElementById(id).value = '');
+     'tecnico','trabajo','repuesto','observacion','presupuestoTexto'].forEach(function(id) { document.getElementById(id).value = ''; });
     document.getElementById('equipo').value = '';
     document.getElementById('estado').value = '';
     document.getElementById('horaInicio').value = '';
     document.getElementById('horaFin').value = '';
-    ['subtipo-aa-sel','subtipo-calefactor-sel','subtipo-caldera-sel','subtipo-caldera-simple-sel'].forEach(id => document.getElementById(id).value = '');
-    ['subtipo-aa','subtipo-calefactor','subtipo-caldera','subtipo-caldera-simple'].forEach(id => document.getElementById(id).classList.remove('visible'));
+    ['subtipo-aa-sel','subtipo-calefactor-sel','subtipo-caldera-sel','subtipo-caldera-simple-sel'].forEach(function(id) { document.getElementById(id).value = ''; });
+    ['subtipo-aa','subtipo-calefactor','subtipo-caldera','subtipo-caldera-simple'].forEach(function(id) { document.getElementById(id).classList.remove('visible'); });
     document.getElementById('presupuestoDetalle').classList.remove('visible');
     document.getElementById('foto-nombre').textContent = '';
     document.getElementById('fotoInput').value = '';
     document.getElementById('fotoAviso').classList.remove('visible');
-    document.querySelectorAll('.problem-btn.selected').forEach(b => b.classList.remove('selected'));
-    const hoy = new Date();
+    document.querySelectorAll('.problem-btn.selected').forEach(function(b) { b.classList.remove('selected'); });
+    var hoy = new Date();
     document.getElementById('fechaServicio').value =
-      `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+      hoy.getFullYear() + '-' + String(hoy.getMonth()+1).padStart(2,'0') + '-' + String(hoy.getDate()).padStart(2,'0');
     cerrarModalBtn();
     mostrarToast('✅ Formulario reiniciado');
   }
 
   function mostrarToast(msg) {
-    const t = document.getElementById('toast');
+    var t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
+    setTimeout(function() { t.classList.remove('show'); }, 2500);
   }
 </script>
 </body>
